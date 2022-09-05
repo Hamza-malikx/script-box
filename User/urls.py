@@ -15,10 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .import views
+# from User import views
 
-from User import views
 
 urlpatterns = [
+    path('user/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    
+    # User..
+    path('user/profile/', views.getUserProfile, name="user-profile"),
+    path('user/register/', views.registerUser, name="register"),
+    
+    path('', views.getRoutes, name="routes"),
     path('uploadContent/', views.upload_content, name='upload-content'),
-
 ]
