@@ -69,20 +69,15 @@ def getUserProfile(request):
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
 
-# ------------------------------------------------------
+# -------------------Content-----------------------------------
 
 @api_view(['POST'])
 def upload_content(request):
-    data = request.data
-    return None
-
-@api_view(['POST'])
-def register_shop(request):
     try:
         data = request.data
-        # user = User.objects.get(username=data['user'])  user id sent from the frontend getting object
+        user = User.objects.get(new_username=data['user'])
         content = Content.objects.create(
-            #user=user,
+            user=user,
             title=data['title'],
             link=data['link'],
             is_varfied=data['is_varfied'],
@@ -92,7 +87,7 @@ def register_shop(request):
             tag=data['tag'],
             type=data['type'],
             privacy=data['privacy'],
-
+            thumbnail= request.FILE.get('image')
         )
 
         script = Script.objects.create(
@@ -105,5 +100,67 @@ def register_shop(request):
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
-        print(message)
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_content(self, pk):
+    try:
+        con = Content.objects.get(id=pk)
+        Content.objects.get(id=pk).update(vew=con.views +1)
+        serializer = ContentSerializer(con, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_all_content(self):
+    try:
+        con = Content.objects.all()
+        serializer = ContentSerializer(con, many=True)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_user_content(self,pk):
+    try:
+        con = Content.objects.filter(user=User.objects.get(new_username=pk))
+        serializer = ContentSerializer(con, many=True)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)\
+
+@api_view(['PUT'])
+def update_content(request,pk):
+    try:
+        data = request.data
+        content = Content.object.get(id=pk).update(
+            title=data['title'],
+            link=data['link'],
+            is_varfied=data['is_varfied'],
+            is_universal=data['is_universal'],
+            description=data['description'],
+            features=data['features'],
+            tag=data['tag'],
+            type=data['type'],
+            privacy=data['privacy'],
+            thumbnail= request.FILE.get('image')
+        )
+
+        script = Script.object.get(content=content).update(
+            script= data['script'],
+            is_patched=data['patched'],
+        )
+        serializer = ContentSerializer(content, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)

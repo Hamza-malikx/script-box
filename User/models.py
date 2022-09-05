@@ -42,8 +42,10 @@ class Content(models.Model):
 
 
 class Script(models.Model):
-    user = models.ForeignKey(Content, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
     script = models.TextField(null=False)
+    is_patched = models.BooleanField(default=False)
+
 
     def __str__(self):
         return str(self.id)
