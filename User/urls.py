@@ -27,5 +27,10 @@ urlpatterns = [
     path('user/register/', views.registerUser, name="register"),
     
     path('', views.getRoutes, name="routes"),
-    path('uploadContent/', views.upload_content, name='upload-content'),
+    path('user/uploadContent/', views.upload_content, name='upload-content'),
+    path('user/content/<str:pk>/', views.get_content, name='get-content'),
+    path('user/userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
+    path('user/allContent/', views.get_all_content, name='get-all-content'),
+    path('user/updateContent/<str:pk>', views.update_content, name='update-content'),
+
 ]

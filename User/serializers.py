@@ -39,7 +39,7 @@ class UserSerializerWithToken(UserSerializer):
 class ScriptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Script
-        fields = '__all__'
+        fields = ['script','is_patched']
 
 # --------------------------------------------------
 
@@ -51,7 +51,10 @@ class ContentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_script(self, obj):
-        return ScriptSerializer(obj.script, many=False).data
+        sc = Script.objects.get(content=obj).all()
+        serializer = ScriptSerializer(sc, many=True)
+        return serializer.data
+
 
 # --------------------------------------------------
 
