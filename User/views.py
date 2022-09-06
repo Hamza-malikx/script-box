@@ -47,7 +47,6 @@ def registerUser(request):
     data = request.data
     try:
         user = User.objects.create(
-            first_name=data['name'],
             username=data['username'],
             email=data['email'],
             password=make_password(data['password'])
@@ -59,7 +58,7 @@ def registerUser(request):
         message = {'detail': 'User with this email already exists'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
-# ------------------------------------------------------
+# -----------------------------------------------------------
 
 # Get a user profile
 @api_view(['GET'])
