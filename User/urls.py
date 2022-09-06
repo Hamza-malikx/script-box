@@ -20,17 +20,18 @@ from .import views
 
 
 urlpatterns = [
-    path('user/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     
     # User..
-    path('user/profile/', views.getUserProfile, name="user-profile"),
-    path('user/register/', views.registerUser, name="register"),
+    path('profile/', views.getUserProfile, name="user-profile"),
+    path('register/', views.registerUser, name="register"),
     
     path('', views.getRoutes, name="routes"),
-    path('user/uploadContent/', views.upload_content, name='upload-content'),
-    path('user/content/<str:pk>/', views.get_content, name='get-content'),
-    path('user/userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
-    path('user/allContent/', views.get_all_content, name='get-all-content'),
-    path('user/updateContent/<str:pk>', views.update_content, name='update-content'),
+    path('uploadContent/', views.upload_content, name='upload-content'),
+    path('content/<str:pk>/', views.get_content, name='get-content'),
+    path('userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
+    path('allContent/', views.get_all_content, name='get-all-content'),
+    path('updateContent/<str:pk>/', views.update_content, name='update-content'),
+    path('getDecryptedScript/<str:pk>/', views.decrypted_script, name='decypted-script'),
 
 ]

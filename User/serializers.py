@@ -5,6 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.fields import ReadOnlyField
 
 from User.models import Script, Content
+
+
 # --------------------------------------------------
 
 
@@ -23,10 +25,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     #     return name
 
+
 # --------------------
 
 class UserSerializerWithToken(UserSerializer):
     token = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
         # fields = '__all__'
@@ -36,12 +40,14 @@ class UserSerializerWithToken(UserSerializer):
         token = RefreshToken.for_user(obj)
         return str(token)
 
+
 # --------------------------------------------------
 
 class ScriptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Script
-        fields = ['script','is_patched']
+        fields = ['script', 'is_patched']
+
 
 # --------------------------------------------------
 
@@ -53,10 +59,9 @@ class ContentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_script(self, obj):
-        sc = Script.objects.get(content=obj).all()
+        sc = Script.objects.filter(content=obj)
         serializer = ScriptSerializer(sc, many=True)
         return serializer.data
-
 
 # --------------------------------------------------
 

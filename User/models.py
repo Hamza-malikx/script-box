@@ -37,8 +37,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)
@@ -48,12 +47,27 @@ class Content(models.Model):
 
 
 class Script(models.Model):
+    id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
-    script = models.TextField(null=False)
+    script = models.CharField(max_length=500,null=False)
     is_patched = models.BooleanField(default=False)
 
 
-    def __str__(self):
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class PrivateKey(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    script = models.ForeignKey(Script, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    privateKey = models.TextField(null=False)
+
+
+    def _str_(self):
         return str(self.id)
 
     class Meta:
