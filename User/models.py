@@ -15,6 +15,12 @@ Privacy = (
 )
 
 
+# User Model
+class User(User):
+    is_user = models.BooleanField('Is user', default=False)
+    is_moderator = models.BooleanField('Is moderator', default=False)
+    is_admin = models.BooleanField('Is admin', default=False)
+
 class Content(models.Model):
     id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     title = models.CharField(max_length=200)
