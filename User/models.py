@@ -64,7 +64,7 @@ class PrivateKey(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     script = models.ForeignKey(Script, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    privateKey = models.TextField(null=False)
+    privateKey = models.ImageField(null=False)
 
 
     def _str_(self):
