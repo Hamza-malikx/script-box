@@ -32,6 +32,8 @@ urlpatterns = [
     path('userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
     path('allContent/', views.get_all_content, name='get-all-content'),
     path('updateContent/<str:pk>/', views.update_content, name='update-content'),
-    path('getDecryptedScript/<str:pk>/', views.decrypted_script, name='decypted-script'),
+    path('getDecryptedScript/<str:pk>/', views.decrypted_script, name='decrypted-script'),
+    path('encryptScript/<str:pk>/', views.encrypt_script, name='encrypt-script'),
+
 
 ]
