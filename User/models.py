@@ -21,6 +21,7 @@ Privacy = (
     ('Private', 'Private'),
 )
 
+
 # ---------------- Tayyab --------------------------------------------
 
 
@@ -29,19 +30,20 @@ Privacy = (
 #     is_user = models.BooleanField('Is user', default=False)
 #     is_moderator = models.BooleanField('Is moderator', default=False)
 #     is_admin = models.BooleanField('Is admin', default=False)
-    
+
 
 class User(User):
-      DOCTOR = 1
-      NURSE = 2
-      SURGEN =3
-      
-      ROLE_CHOICES = (
-          (DOCTOR, 'Doctor'),
-          (NURSE, 'Nurse'),
-          (SURGEN, 'Surgen'),
-      )
-      role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+    DOCTOR = 1
+    NURSE = 2
+    SURGEN = 3
+
+    ROLE_CHOICES = (
+        (DOCTOR, 'Doctor'),
+        (NURSE, 'Nurse'),
+        (SURGEN, 'Surgen'),
+    )
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+
 
 # ---------------- Shahab --------------------------------------------
 
@@ -61,7 +63,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)
@@ -73,9 +75,9 @@ class Content(models.Model):
 class Script(models.Model):
     id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
-    script = models.CharField(max_length=500,null=False)
+    script = models.CharField(max_length=500, null=False)
+    is_encrypted = models.BooleanField(default=False)
     is_patched = models.BooleanField(default=False)
-
 
     def _str_(self):
         return str(self.id)
@@ -87,13 +89,13 @@ class Script(models.Model):
 def contact_default():
     return {"email": "to1@example.com"}
 
-class PrivateKey(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-    script = models.ForeignKey(Script, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    privateKey = models.TextField(null=False)
-    # privateKey = models.JSONField("privateKey", default=contact_default)
 
+class PrivateKey(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    script_id = models.CharField(null=False, max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    privateKey = models.CharField(null=False, max_length=2000)
+    #privateKey = models.JSONField()
 
     def _str_(self):
         return str(self.id)

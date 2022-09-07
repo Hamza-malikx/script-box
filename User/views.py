@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from cryptography.fernet import Fernet
 # from requests import Response
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
@@ -15,8 +16,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from User.models import Script, Content, User, PrivateKey
 
 # Serializers
-from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken
+from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken,ScriptSerializer
 import rsa
+
 
 # --------------------------------------------------------------------------
 
@@ -32,14 +34,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return data
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
 
 # ------------------------------------------------------
 
 @api_view(['GET'])
 def getRoutes(request):
     return Response('')
+
 
 # ------------------------------------------------------
 # Register a user:
@@ -59,6 +64,7 @@ def registerUser(request):
         message = {'detail': 'User with this email already exists'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+
 # -----------------------------------------------------------
 
 # Get a user profile
@@ -68,6 +74,7 @@ def getUserProfile(request):
     user = request.user
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
+
 
 # -------------------Content-----------------------------------
 
@@ -87,23 +94,23 @@ def upload_content(request):
             tag=data['tag'],
             type=data['type'],
             privacy=data['privacy'],
-            thumbnail= data['image']
+            thumbnail=data['image']
         )
 
-        publicKey, privateKey = rsa.newkeys(512)
-        encScript = rsa.encrypt(data['script'].encode(),
-                                publicKey)
+        # publicKey, privateKey = rsa.newkeys(512)
+        # encScript = rsa.encrypt(data['script'].encode(),
+        #                         publicKey)
 
         sc = Script.objects.create(
-            script= encScript,
-            content = content,
+            script=data['script'],
+            content=content,
         )
 
-        key = PrivateKey.objects.create(
-            user=user,
-            script=sc,
-            privateKey= privateKey,
-        )
+        # key = PrivateKey.objects.create(
+        #     user=user,
+        #     script=sc,
+        #     privateKey= {'key': privateKey},
+        # )
 
         serializer = ContentSerializer(content, many=False)
         return Response(serializer.data)
@@ -118,13 +125,14 @@ def get_content(self, pk):
     try:
         print(pk)
         con = Content.objects.get(id=pk)
-        Content.objects.filter(id=pk).update(views=con.views +1)
+        Content.objects.filter(id=pk).update(views=con.views + 1)
         serializer = ContentSerializer(con, many=False)
         return Response(serializer.data)
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 def get_all_content(self):
@@ -137,8 +145,9 @@ def get_all_content(self):
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
-def get_user_content(request,pk):
+def get_user_content(request, pk):
     try:
         con = Content.objects.filter(user=User.objects.get(username=pk))
         serializer = ContentSerializer(con, many=True)
@@ -148,10 +157,10 @@ def get_user_content(request,pk):
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['PUT'])
-def update_content(request,pk):
+def update_content(request, pk):
     try:
-        print(pk)
         data = request.data
         content = Content.objects.filter(id=pk).update(
             title=data['title'],
@@ -163,11 +172,11 @@ def update_content(request,pk):
             tag=data['tag'],
             type=data['type'],
             privacy=data['privacy'],
-            thumbnail= data['image']
+            thumbnail=data['image']
         )
 
         script = Script.objects.filter(content=content).update(
-            script= data['script'],
+            script=data['script'],
             is_patched=data['patched'],
         )
         return Response("Updated")
@@ -178,13 +187,52 @@ def update_content(request,pk):
 
 
 @api_view(['GET'])
-def decrypted_script(self,pk):
-    dy_sci ={}
-    con = Content.objects.get(id=pk)
-    scri = Script.objects.filter(content=con)
-    for s in scri:
-        p = PrivateKey.objects.get(script=s)
-        dy_sci[s.id] = rsa.decrypt(s.script, rsa.importKey(p.privateKey)).decode()
+def decrypted_script(self, pk):
+    try:
+        scri = Script.objects.get(id=pk)
+        key = PrivateKey.objects.get(script_id=scri.id)
+        # print(type(key.privateKey))
+        # print(type((key.privateKey).encode()))
+        print(key.privateKey)
+        cipher_suite = Fernet(key.privateKey)
+        print("dsafdsadfcsdfds")
+        decoded_text = cipher_suite.decrypt((scri.script).encode())
 
-    return Response({'data': dy_sci})
+        scri.is_encrypted=False
+        scri.script= decoded_text
+        scri.save()
 
+        serializer = ScriptSerializer(scri, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def encrypt_script(request, pk):
+    try:
+        scri = Script.objects.get(id=pk)
+        if not scri.is_encrypted:
+            user = User.objects.get(username=scri.content.user.username)
+            key = Fernet.generate_key()
+            cipher_suite = Fernet(key)
+            encoded_text = cipher_suite.encrypt((scri.script).encode())
+    
+            scri.is_encrypted=True
+            scri.script=encoded_text
+            scri.save()
+    
+            priv = PrivateKey.objects.create(
+                user=user,
+                script_id=scri.id,
+                privateKey=key,
+            )
+            serializer = ScriptSerializer(scri, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("Encrypted Already")
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
