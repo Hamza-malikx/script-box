@@ -1,6 +1,13 @@
 from datetime import datetime
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.db import models
+
+# from django.conf import settings
+# User = settings.AUTH_USER_MODEL
+
+# from django.contrib.auth import get_user_model
+# User = get_user_model()
+
 
 # Create your models here.
 
@@ -14,12 +21,29 @@ Privacy = (
     ('Private', 'Private'),
 )
 
+# ---------------- Tayyab --------------------------------------------
+
 
 # User Model
+# class User(User):
+#     is_user = models.BooleanField('Is user', default=False)
+#     is_moderator = models.BooleanField('Is moderator', default=False)
+#     is_admin = models.BooleanField('Is admin', default=False)
+    
+
 class User(User):
-    is_user = models.BooleanField('Is user', default=False)
-    is_moderator = models.BooleanField('Is moderator', default=False)
-    is_admin = models.BooleanField('Is admin', default=False)
+      DOCTOR = 1
+      NURSE = 2
+      SURGEN =3
+      
+      ROLE_CHOICES = (
+          (DOCTOR, 'Doctor'),
+          (NURSE, 'Nurse'),
+          (SURGEN, 'Surgen'),
+      )
+      role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+
+# ---------------- Shahab --------------------------------------------
 
 class Content(models.Model):
     id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
@@ -37,7 +61,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)
@@ -60,11 +84,15 @@ class Script(models.Model):
         ordering = ['id']
 
 
+def contact_default():
+    return {"email": "to1@example.com"}
+
 class PrivateKey(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     script = models.ForeignKey(Script, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.TextField(null=False)
+    # privateKey = models.JSONField("privateKey", default=contact_default)
 
 
     def _str_(self):

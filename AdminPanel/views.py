@@ -19,6 +19,10 @@ from User.serializers import ContentSerializer, UserSerializer, UserSerializerWi
 
 # Create your views here.
 
+@api_view(['GET'])
+def mainPage(request):
+    return Response('AdminPanel')
+
 
 # Get a user profile
 @api_view(['GET'])
@@ -26,3 +30,5 @@ def getUsers(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+

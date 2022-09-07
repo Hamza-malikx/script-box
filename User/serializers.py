@@ -11,7 +11,7 @@ from User.models import Script, Content
 
 
 class UserSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField(read_only=True)
+    # name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
