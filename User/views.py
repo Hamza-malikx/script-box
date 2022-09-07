@@ -12,7 +12,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Models
-from User.models import Script, Content, User,PrivateKey
+from User.models import Script, Content, User, PrivateKey
 
 # Serializers
 from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken

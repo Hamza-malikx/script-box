@@ -20,13 +20,13 @@ from .import views
 
 
 urlpatterns = [
-    path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('', views.getRoutes, name="routes"),
     
     # User..
+    path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('profile/', views.getUserProfile, name="user-profile"),
     path('register/', views.registerUser, name="register"),
     
-    path('', views.getRoutes, name="routes"),
     path('uploadContent/', views.upload_content, name='upload-content'),
     path('content/<str:pk>/', views.get_content, name='get-content'),
     path('userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
