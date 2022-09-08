@@ -1,6 +1,6 @@
 from datetime import datetime
-from django.contrib.auth.models import User, AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # from django.conf import settings
 # User = settings.AUTH_USER_MODEL
@@ -32,19 +32,66 @@ Privacy = (
 #     is_admin = models.BooleanField('Is admin', default=False)
 
 
-class User(User):
-    DOCTOR = 1
-    NURSE = 2
-    SURGEN = 3
+# class User(User):
+#     DOCTOR = 1
+#     NURSE = 2
+#     SURGEN = 3
 
-    ROLE_CHOICES = (
-        (DOCTOR, 'Doctor'),
-        (NURSE, 'Nurse'),
-        (SURGEN, 'Surgen'),
-    )
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+#     ROLE_CHOICES = (
+#         (DOCTOR, 'Doctor'),
+#         (NURSE, 'Nurse'),
+#         (SURGEN, 'Surgen'),
+#     )
+#     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
+    
+
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = "ADMIN", "Admin"
+        MODERATOR = "MODERATOR", "Moderator"
+        USER = "USER", "User"
+
+    # base_role = Role.ADMIN
+
+    role = models.CharField(max_length=50, choices=Role.choices)
+
+    # def save(self, *args, **kwargs):
+    #     if not self.pk:
+    #         self.role = self.base_role
+    #         return super().save(*args, **kwargs)
+        
+    class Meta:
+        ordering = ['id']
 
 
+class ModeratorManager(BaseUserManager):
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role=User.Role.MODERATOR)
+
+class Moderator(User):
+    base_role = User.Role.MODERATOR
+    moderator = ModeratorManager()
+    class Meta:
+        proxy = True
+
+    def welcome(self):
+        return "Only for moderators"
+
+
+class NormalUserManager(BaseUserManager):
+    def get_queryset(self, *args, **kwargs):
+        results = super().get_queryset(*args, **kwargs)
+        return results.filter(role=User.Role.USER)
+
+class NormalUser(User):
+    base_role = User.Role.MODERATOR
+    normalUser = NormalUserManager()
+    class Meta:
+        proxy = True
+
+    def welcome(self):
+        return "Only for normal users"
 # ---------------- Shahab --------------------------------------------
 
 class Content(models.Model):
@@ -63,7 +110,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.title)
@@ -91,7 +138,7 @@ def contact_default():
 
 
 class PrivateKey(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     script_id = models.CharField(null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.CharField(null=False, max_length=2000)

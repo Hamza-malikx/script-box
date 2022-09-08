@@ -21,6 +21,8 @@ from .import views
 
 urlpatterns = [
     path('', views.getRoutes, name="routes"),
+    path('moderators/', views.getModerators, name="moderators"),
+    path('normalUsers/', views.getNormalUsers, name="normal-users"),
     
     # User..
     path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

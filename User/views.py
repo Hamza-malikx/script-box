@@ -13,10 +13,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Models
-from User.models import Script, Content, User, PrivateKey
+from User.models import Script, Content, User, PrivateKey, Moderator, NormalUser
 
 # Serializers
-from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken,ScriptSerializer
+from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken,ScriptSerializer, ModeratorSerializer, NormalUserSerializer
 import rsa
 
 
@@ -44,6 +44,18 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 def getRoutes(request):
     return Response('')
+    
+@api_view(['GET'])
+def getModerators(request):
+    studentUser = Moderator.moderator.all()
+    serializer = ModeratorSerializer(studentUser, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def getNormalUsers(request):
+    normalUser = NormalUser.normalUser.all()
+    serializer = NormalUserSerializer(normalUser, many=True)
+    return Response(serializer.data)
 
 
 # ------------------------------------------------------

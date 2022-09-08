@@ -1,13 +1,27 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import get_user_model
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.fields import ReadOnlyField
 
-from User.models import Script, Content
+from User.models import Script, Content, Moderator, NormalUser
 
 
 # --------------------------------------------------
+
+
+class ModeratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Moderator
+        fields = '__all__'
+        
+class NormalUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NormalUser
+        fields = '__all__'
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,8 +29,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        # fields = '__all__'
-        fields = ['id', 'username', 'email']
+        fields = '__all__'
+        # fields = ['id', 'username', 'email']
 
     # def get_name(self, obj):
     #     name = obj.first_name
@@ -33,8 +47,8 @@ class UserSerializerWithToken(UserSerializer):
 
     class Meta:
         model = User
-        # fields = '__all__'
-        fields = ['id', 'username', 'email', 'token']
+        fields = '__all__'
+        # fields = ['id', 'username', 'email', 'token']
 
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)

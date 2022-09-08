@@ -177,6 +177,6 @@ ENCRYPT_KEY = b'iDJpljxUBBsacCZ50GpSBff6Xem0R-giqXXnBFGJ2Rs='
 CORS_ALLOW_ALL_ORIGINS = True
 # CSRF_TRUSTED_ORIGINS = ['https://modatabs.com', 'https://medico-django-app.herokuapp.com']
 
-Auth_USER_MODEL = 'User.User'
+# Auth_USER_MODEL = 'User.User'
 
-# AUTH_USER_MODEL = 'User.User'
+AUTH_USER_MODEL = 'User.User'
