@@ -53,7 +53,7 @@ class NormalUser(User):
 # ---------------- Shahab --------------------------------------------
 
 class Content(models.Model):
-    id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
+    # id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     title = models.CharField(max_length=200)
     link = models.CharField(max_length=600)
     thumbnail = models.ImageField(null=True, blank=True)
@@ -78,7 +78,7 @@ class Content(models.Model):
 
 
 class Script(models.Model):
-    id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
+    # id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     script = models.CharField(max_length=500, null=False)
     is_encrypted = models.BooleanField(default=False)

@@ -96,6 +96,7 @@ def upload_content(request):
     try:
         data = request.data
         user = User.objects.get(username=data['user'])
+        print("Userrrrrrr::::::", user)
         content = Content.objects.create(
             user=user,
             title=data['title'],
