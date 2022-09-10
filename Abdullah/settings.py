@@ -181,3 +181,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Auth_USER_MODEL = 'User.User'
 
 AUTH_USER_MODEL = 'User.User'
+
+CSRF_TRUSTED_ORIGINS = ['https://ab-scriptbox.herokuapp.com']
+
+
