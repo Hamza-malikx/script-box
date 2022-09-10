@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'User.apps.UserConfig',
+    'Moderator.apps.ModeratorConfig',
     'AdminPanel.apps.AdminpanelConfig',
 ]
 

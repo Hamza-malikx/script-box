@@ -2,13 +2,6 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
-# from django.conf import settings
-# User = settings.AUTH_USER_MODEL
-
-# from django.contrib.auth import get_user_model
-# User = get_user_model()
-
-
 # Create your models here.
 
 Type = (
@@ -23,28 +16,6 @@ Privacy = (
 
 
 # ---------------- Tayyab --------------------------------------------
-
-
-# User Model
-# class User(User):
-#     is_user = models.BooleanField('Is user', default=False)
-#     is_moderator = models.BooleanField('Is moderator', default=False)
-#     is_admin = models.BooleanField('Is admin', default=False)
-
-
-# class User(User):
-#     DOCTOR = 1
-#     NURSE = 2
-#     SURGEN = 3
-
-#     ROLE_CHOICES = (
-#         (DOCTOR, 'Doctor'),
-#         (NURSE, 'Nurse'),
-#         (SURGEN, 'Surgen'),
-#     )
-#     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True)
-    
-
 class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
@@ -64,21 +35,6 @@ class User(AbstractUser):
         ordering = ['id']
 
 
-class ModeratorManager(BaseUserManager):
-    def get_queryset(self, *args, **kwargs):
-        results = super().get_queryset(*args, **kwargs)
-        return results.filter(role=User.Role.MODERATOR)
-
-class Moderator(User):
-    base_role = User.Role.MODERATOR
-    moderator = ModeratorManager()
-    class Meta:
-        proxy = True
-
-    def welcome(self):
-        return "Only for moderators"
-
-
 class NormalUserManager(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
@@ -92,6 +48,8 @@ class NormalUser(User):
 
     def welcome(self):
         return "Only for normal users"
+    
+    
 # ---------------- Shahab --------------------------------------------
 
 class Content(models.Model):
@@ -110,11 +68,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-<<<<<<< HEAD
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-=======
     user = models.ForeignKey(User, on_delete=models.CASCADE)
->>>>>>> 16c7c6c1780dcd19ba156e3176ec8f20b3d9c4f8
 
     def __str__(self):
         return str(self.title)
@@ -142,18 +96,10 @@ def contact_default():
 
 
 class PrivateKey(models.Model):
-<<<<<<< HEAD
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
-    script_id = models.CharField(null=False, max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    privateKey = models.CharField(null=False, max_length=2000)
-    #privateKey = models.JSONField()
-=======
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     script_id = models.CharField(null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.CharField(null=False, max_length=2000)
->>>>>>> 16c7c6c1780dcd19ba156e3176ec8f20b3d9c4f8
 
     def _str_(self):
         return str(self.id)
