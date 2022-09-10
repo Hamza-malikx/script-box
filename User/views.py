@@ -3,7 +3,14 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+# encryption
 from cryptography.fernet import Fernet
+import base64
+import os
+from cryptography.hazmat.primitives.hashes import SHA256
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+
 # from requests import Response
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
@@ -16,7 +23,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from User.models import Script, Content, User, PrivateKey, Moderator, NormalUser
 
 # Serializers
-from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken,ScriptSerializer, ModeratorSerializer, NormalUserSerializer
+from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, ScriptSerializer, \
+    ModeratorSerializer, NormalUserSerializer
 import rsa
 
 
@@ -44,7 +52,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 def getRoutes(request):
     return Response('')
-    
+
+
 @api_view(['GET'])
 def getModerators(request):
     studentUser = Moderator.moderator.all()
@@ -202,20 +211,23 @@ def update_content(request, pk):
 def decrypted_script(self, pk):
     try:
         scri = Script.objects.get(id=pk)
-        key = PrivateKey.objects.get(script_id=scri.id)
-        # print(type(key.privateKey))
-        # print(type((key.privateKey).encode()))
-        print(key.privateKey)
-        cipher_suite = Fernet(key.privateKey)
-        print("dsafdsadfcsdfds")
-        decoded_text = cipher_suite.decrypt((scri.script).encode())
+        if scri.is_encrypted:
+            key = PrivateKey.objects.get(script_id=scri.id)
 
-        scri.is_encrypted=False
-        scri.script= decoded_text
-        scri.save()
+            Pkey = key.privateKey[2:-1]
+            PScri = scri.script[2:-1]
+            decoded_text = decrypt(scri.id, PScri, Pkey)
 
-        serializer = ScriptSerializer(scri, many=False)
-        return Response(serializer.data)
+            scri.is_encrypted = False
+            scri.script = str(decoded_text)[2:-1]
+            scri.save()
+            key.delete()
+
+            serializer = ScriptSerializer(scri, many=False)
+            return Response(serializer.data)
+
+        else:
+            return Response("Already Decrypted")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
@@ -226,25 +238,63 @@ def encrypt_script(request, pk):
     try:
         scri = Script.objects.get(id=pk)
         if not scri.is_encrypted:
+
             user = User.objects.get(username=scri.content.user.username)
-            key = Fernet.generate_key()
-            cipher_suite = Fernet(key)
-            encoded_text = cipher_suite.encrypt((scri.script).encode())
-    
-            scri.is_encrypted=True
-            scri.script=encoded_text
+            # Generate a salt for use in the PBKDF2 hash
+            Pkey = base64.b64encode(os.urandom(12))  # Recommended method from cryptography.io
+            encoded_text = encrypt(scri.id, scri.script, Pkey)
+
+            scri.is_encrypted = True
+            scri.script = encoded_text
             scri.save()
-    
+
             priv = PrivateKey.objects.create(
                 user=user,
                 script_id=scri.id,
-                privateKey=key,
+                privateKey=Pkey,
             )
+
             serializer = ScriptSerializer(scri, many=False)
             return Response(serializer.data)
         else:
             return Response("Encrypted Already")
-
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+def encrypt(scri_id, script, salt):
+    # Set up the hashing algo
+    kdf = PBKDF2HMAC(
+        algorithm=SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,  # This stretches the hash against brute forcing
+        backend=default_backend(),  # Typically this is OpenSSL
+    )
+    # Derive a binary hash and encode it with base 64 encoding
+    hashed_pwd = base64.b64encode(kdf.derive(scri_id.encode()))
+
+    # Set up AES in CBC mode using the hash as the key
+    f = Fernet(hashed_pwd)
+    encrypted_secret = f.encrypt(script.encode())
+    return encrypted_secret
+
+
+def decrypt(scri_id, script, salt):
+    # Set up the hashing algo
+    kdf = PBKDF2HMAC(
+        algorithm=SHA256(),
+        length=32,
+        salt=salt.encode(),
+        iterations=100000,  # This stretches the hash against brute forcing
+        backend=default_backend(),  # Typically this is OpenSSL
+    )
+    # Derive a binary hash and encode it with base 64 encoding
+    hashed_pwd = base64.b64encode(kdf.derive(scri_id.encode()))
+
+    # Set up AES in CBC mode using the hash as the key
+    f = Fernet(hashed_pwd)
+
+    secret = f.decrypt(script.encode())
+    return secret

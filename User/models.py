@@ -110,7 +110,11 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+<<<<<<< HEAD
     # user = models.ForeignKey(User, on_delete=models.CASCADE)
+=======
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+>>>>>>> 16c7c6c1780dcd19ba156e3176ec8f20b3d9c4f8
 
     def __str__(self):
         return str(self.title)
@@ -138,11 +142,18 @@ def contact_default():
 
 
 class PrivateKey(models.Model):
+<<<<<<< HEAD
     # user = models.ForeignKey(User, on_delete=models.CASCADE)
     script_id = models.CharField(null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.CharField(null=False, max_length=2000)
     #privateKey = models.JSONField()
+=======
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    script_id = models.CharField(null=False, max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    privateKey = models.CharField(null=False, max_length=2000)
+>>>>>>> 16c7c6c1780dcd19ba156e3176ec8f20b3d9c4f8
 
     def _str_(self):
         return str(self.id)
