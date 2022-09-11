@@ -6,16 +6,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.fields import ReadOnlyField
 
-from User.models import Script, Content, Moderator, NormalUser
+from User.models import Script, Content, NormalUser
 
 
 # --------------------------------------------------
-
-
-class ModeratorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Moderator
-        fields = '__all__'
         
 class NormalUserSerializer(serializers.ModelSerializer):
     class Meta:

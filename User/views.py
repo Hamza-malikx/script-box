@@ -20,11 +20,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Models
-from User.models import Script, Content, User, PrivateKey, Moderator, NormalUser
+from User.models import Script, Content, User, PrivateKey, NormalUser
 
 # Serializers
-from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, ScriptSerializer, \
-    ModeratorSerializer, NormalUserSerializer
+from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, ScriptSerializer, NormalUserSerializer
 import rsa
 
 
@@ -52,14 +51,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 def getRoutes(request):
     return Response('')
-
-
-@api_view(['GET'])
-def getModerators(request):
-    studentUser = Moderator.moderator.all()
-    serializer = ModeratorSerializer(studentUser, many=True)
-    return Response(serializer.data)
-
 
 @api_view(['GET'])
 def getNormalUsers(request):
@@ -105,6 +96,7 @@ def upload_content(request):
     try:
         data = request.data
         user = User.objects.get(username=data['user'])
+        print("Userrrrrrr::::::", request.FILES.get('image'))
         content = Content.objects.create(
             user=user,
             title=data['title'],
@@ -136,6 +128,18 @@ def upload_content(request):
 
         serializer = ContentSerializer(content, many=False)
         return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def upload_image(request):
+    try:
+        print(request.data['id'])
+        print("Userrrrrrr::::::", request.FILES.get('image'))
+        return Response("Uploaded Image")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
@@ -233,7 +237,6 @@ def decrypted_script(self, pk):
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET'])
 def encrypt_script(request, pk):
