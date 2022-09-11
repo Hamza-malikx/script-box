@@ -15,7 +15,8 @@ const Home = () => {
   };
   const getContent = async () => {
     try {
-      const api = `http://127.0.0.1:8000/api/user/allContent/`;
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/allContent/`;
+
       var res = await axios.get(api);
       if (res.status === 200) {
         setContent(res.data);
@@ -144,7 +145,10 @@ const Home = () => {
                         className={styles.items}
                         style={{
                           backgroundImage:
-                            "url(https://tr.rbxcdn.com/181b251f3eef05dea6266ce6659fb0ca/500/280/Image/Jpeg)",
+                            "url(" +
+                            process.env.REACT_APP_Base_URL +
+                            val.thumbnail +
+                            ")",
                         }}
                       >
                         <div className={styles.itemsHeader}>

@@ -135,10 +135,16 @@ def upload_content(request):
 
 
 @api_view(['POST'])
-def upload_image(request):
+def upload_content_image(request):
     try:
         print(request.data['id'])
         print("Userrrrrrr::::::", request.FILES.get('image'))
+        
+        contentID = request.data['id']
+        content = Content.objects.get(id=contentID)
+        content.thumbnail = request.FILES.get('image')
+        content.save()
+         
         return Response("Uploaded Image")
 
     except Exception as ex:

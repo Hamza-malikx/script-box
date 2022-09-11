@@ -54,18 +54,22 @@ const Upload = () => {
         },
       };
 
-      const api = `http://127.0.0.1:8000/api/user/uploadContent/`;
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/uploadContent/`;
 
       var res = await axios.post(api, { ...content, image: formData }, config);
       console.log(content);
-      console.log(formData)
+      console.log(formData);
       if (res.status === 200) {
         console.log("dsdsdsd");
         console.log(res);
-        formData.append('id',res.id)
-          const {data} = await axios.post('http://127.0.0.1:8000/api/user/uploadImage/', formData, config)
+        formData.append("id", res?.data?.id);
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_Base_URL}/api/user/uploadContentImage/`,
+          formData,
+          config
+        );
 
-          console.log(data);
+        console.log(data);
       }
     } catch (e) {
       console.log(e);
