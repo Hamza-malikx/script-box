@@ -1,0 +1,12 @@
+.react-switch-bg {
+  background: #042338 !important;
+}
+.reactSwitch {
+  position: absolute;
+}
+.react-switch-handle {
+  height: 16px !important;
+  width: 16px !important;
+  top: 3.7px !important;
+  left: 3.7px !important;
+}

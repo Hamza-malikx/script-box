@@ -96,7 +96,7 @@ def upload_content(request):
     try:
         data = request.data
         user = User.objects.get(username=data['user'])
-        print("Userrrrrrr::::::", user)
+        print("Userrrrrrr::::::", request.FILES.get('image'))
         content = Content.objects.create(
             user=user,
             title=data['title'],
@@ -128,6 +128,18 @@ def upload_content(request):
 
         serializer = ContentSerializer(content, many=False)
         return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def upload_image(request):
+    try:
+        print(request.data['id'])
+        print("Userrrrrrr::::::", request.FILES.get('image'))
+        return Response("Uploaded Image")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}

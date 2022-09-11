@@ -1,0 +1,59 @@
+.header nav {
+  box-shadow: 4px 3px 13px rgb(0 0 0 / 50%);
+  padding: 18.2px 0;
+}
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0 14px;
+}
+.logo h2 {
+  color: #7367f0;
+}
+.navItemsCenter {
+  gap: 0 43px;
+  align-items: center;
+}
+.navItemsCenter a {
+  color: #000 !important;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btnWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0 18px;
+  width: fit-content;
+}
+.signupBtn {
+  width: 117px;
+  height: 54.94px;
+  font-family: Roboto, "Helvetica Neue";
+  font-sizel: 15px;
+  color: #16133e;
+  font-weight: 600;
+  border: 2px solid #16133e;
+  border-radius: 0.375rem;
+  transition: all 1s;
+}
+.signupBtn:hover {
+  background: #16133e;
+  color: #fff;
+  transition: all 1s;
+}
+.loginBtn {
+  width: 101px;
+  height: 54.94px;
+  font-family: Roboto, "Helvetica Neue";
+  font-sizel: 15px;
+  color: #fff;
+  font-weight: 600;
+  border: 2px solid #16133e;
+  border-radius: 0.375rem;
+  background: #16133e;
+}
