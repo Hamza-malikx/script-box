@@ -54,7 +54,7 @@ class UserSerializerWithToken(UserSerializer):
 class ScriptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Script
-        fields = ['script', 'is_patched','is_encrypted']
+        fields = ['id', 'script', 'is_patched','is_encrypted']
 
 
 # --------------------------------------------------
