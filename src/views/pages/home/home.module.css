@@ -135,6 +135,10 @@
   cursor: pointer;
   justify-content: space-between;
   margin-bottom: 25px;
+  transition: all 0.5s ease-in-out;
+}
+.items:hover {
+  transform: scale(1.1);
 }
 .itemsHeader {
   padding: 1rem;

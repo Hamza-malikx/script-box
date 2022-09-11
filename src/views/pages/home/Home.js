@@ -4,10 +4,12 @@ import Header from "./navbar/Header";
 import Switch from "react-switch";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
+
 const Home = () => {
   const [content, setContent] = useState(null);
   const [switchState, setSwitchState] = useState(false);
-
+  console.log();
   const handleChange = (nextChecked) => {
     setSwitchState(nextChecked);
   };
@@ -135,9 +137,9 @@ const Home = () => {
             </div>
             <div className={styles.scriptsItems}>
               <div className="row">
-                {content?.map((val) => {
+                {content?.map((val, id) => {
                   return (
-                    <div className="col-lg-3 ps-1 pe-1">
+                    <div className="col-lg-3 ps-1 pe-1" key={id}>
                       <div
                         className={styles.items}
                         style={{
@@ -174,7 +176,7 @@ const Home = () => {
                               {val.views}
                             </div>
                             <div className={styles.uploadTime}>
-                              18 minutes ago
+                              {moment(val.created_at).fromNow()}
                             </div>
                           </div>
                           <div className={styles.itemsHeaderBottom}>

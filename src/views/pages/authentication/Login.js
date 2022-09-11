@@ -310,9 +310,9 @@ const Login = () => {
                 <span>Create an account</span>
               </Link>
             </p>
-            <div className="divider my-2">
+            {/* <div className="divider my-2">
               <div className="divider-text">or</div>
-            </div>
+            </div> */}
             {/* <div className='auth-footer-btn d-flex justify-content-center'>
               <Button color='facebook'>
                 <Facebook size={14} />

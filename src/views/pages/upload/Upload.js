@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./upload.module.css";
 import Header from "../home/navbar/Header";
 import Switch from "react-switch";
@@ -6,7 +6,7 @@ import axios from "axios";
 const Upload = () => {
   const [thumbnail, setThumbnail] = useState([]);
   const [content, setContent] = useState({
-    user: "hamza2",
+    user: "hamza",
     title: "",
     link: "",
     is_varfied: false,
@@ -35,27 +35,18 @@ const Upload = () => {
     setTypeState(nextChecked);
     setContent({ ...content, type: nextChecked ? "paid" : "free" });
   };
-  console.log(content);
 
   const handleChangeInput = (e) => {
     setContent({ ...content, [e.target.name]: e.target.value });
-    console.log(content);
   };
   const handleChangeInputFile = (e) => {
     setThumbnail(e.target.files[0]);
   };
-  console.log(thumbnail);
-
   const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("image", thumbnail);
-    for (var key of formData.entries()) {
-      console.log(key[0] + ", " + key[1]);
-    }
-    console.log({ ...content, image: formData });
     try {
-      // console.log(content);
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -65,16 +56,12 @@ const Upload = () => {
       var res = await axios.post(api, { ...content, image: formData }, config);
       console.log(content);
       if (res.status === 200) {
-        // setContent(res.data);
+        console.log(res);
       }
-      console.log(res);
     } catch (e) {
       console.log(e);
     }
   };
-  useEffect(() => {
-    // submitHandler();
-  }, []);
   return (
     <div>
       <Header />
@@ -133,85 +120,93 @@ const Upload = () => {
               }
             />
           </div>
-          <label>Game link*</label>
-          <br />
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Enter link of the game (Eg. www.roblox.com/games/game-id)"
-            name="link"
-            value={content.link}
-            onChange={handleChangeInput}
-          ></input>
+          <div className={styles.gameLink}>
+            <label>Game link*</label>
+            <br />
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Enter link of the game (Eg. www.roblox.com/games/game-id)"
+              name="link"
+              value={content.link}
+              onChange={handleChangeInput}
+            ></input>
+          </div>
           <label>Upload Custom Thumbnail (optional)</label>
           <br />
           <p>NOTE: Recommended image aspect ratio should be 16:9</p>
-          <input
-            type="file"
-            name="image"
-            // value={content.image}
-            onChange={handleChangeInputFile}
-          ></input>
-          <label>Features*</label>
-          <br />
-          <label>Verified Script</label>
-          <br />
+          <div className={styles.fileInp}>
+            <input
+              type="file"
+              name="image"
+              className="form-control"
+              onChange={handleChangeInputFile}
+            ></input>
+          </div>
+          <div className={styles.verifiedS}>
+            <label>Verified Script</label>
+            <br />
 
-          <Switch
-            className={`reactSwitch`}
-            onChange={handleVerifiedScriptChange}
-            checked={switchVerState}
-            height={25}
-            uncheckedIcon={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  fontSize: 11,
-                  color: "white",
-                  paddingRight: 2,
-                }}
-              >
-                No
-              </div>
-            }
-            checkedIcon={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  fontSize: 11,
-                  color: "white",
-                  // paddingRight: 2,
-                  paddingLeft: 2,
-                }}
-              >
-                Yes
-              </div>
-            }
-          />
-          <textArea
-            className="form-control"
-            type="text"
-            placeholder="Describe script features"
-            name="features"
-            value={content.features}
-            onChange={handleChangeInput}
-          ></textArea>
-          <label>Add tags</label>
-          <br />
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Enter Tags (Separate with comma/enter)"
-            name="tag"
-            value={content.tag}
-            onChange={handleChangeInput}
-          ></input>
+            <Switch
+              className={`reactSwitch`}
+              onChange={handleVerifiedScriptChange}
+              checked={switchVerState}
+              height={25}
+              uncheckedIcon={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 11,
+                    color: "white",
+                    paddingRight: 2,
+                  }}
+                >
+                  No
+                </div>
+              }
+              checkedIcon={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 11,
+                    color: "white",
+                    // paddingRight: 2,
+                    paddingLeft: 2,
+                  }}
+                >
+                  Yes
+                </div>
+              }
+            />
+          </div>
+          <div className={styles.textAreaWrapper}>
+            <textarea
+              className="form-control"
+              type="text"
+              placeholder="Describe script features"
+              name="features"
+              value={content.features}
+              onChange={handleChangeInput}
+            ></textarea>
+          </div>
+          <div className={styles.addTagsWrapper}>
+            <label>Add tags</label>
+            <br />
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Enter Tags (Separate with comma/enter)"
+              name="tag"
+              value={content.tag}
+              onChange={handleChangeInput}
+            ></input>
+          </div>
           <label>Description</label>
           <br />
 
@@ -223,82 +218,100 @@ const Upload = () => {
             value={content.description}
             onChange={handleChangeInput}
           ></input>
-          <label>Type</label>
-          <br />
+          <div className={styles.typeWrapper}>
+            <label>Type</label>
+            <br />
 
-          <Switch
-            className={`reactSwitch`}
-            onChange={handleTypeChange}
-            checked={type}
-            height={25}
-            uncheckedIcon={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  fontSize: 11,
-                  color: "white",
-                  paddingRight: 2,
-                }}
-              >
-                free
-              </div>
-            }
-            checkedIcon={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  fontSize: 11,
-                  color: "white",
-                  // paddingRight: 2,
-                  paddingLeft: 2,
-                }}
-              >
-                paid
-              </div>
-            }
-          />
-          <label>Paste Your script</label>
+            <Switch
+              className={`reactSwitch`}
+              onChange={handleTypeChange}
+              checked={type}
+              height={25}
+              uncheckedIcon={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 11,
+                    color: "white",
+                    paddingRight: 2,
+                  }}
+                >
+                  free
+                </div>
+              }
+              checkedIcon={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 11,
+                    color: "white",
+                    // paddingRight: 2,
+                    paddingLeft: 2,
+                  }}
+                >
+                  paid
+                </div>
+              }
+            />
+          </div>
           <br />
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Write your script here..."
-            name="script"
-            value={content.script}
-            onChange={handleChangeInput}
-          ></input>
-          <p>Privacy:</p>
+          <div className={styles.pasteScriptWrapper}>
+            <label>Paste Your script</label>
+            <br />
+            <textarea
+              className="form-control"
+              type="text"
+              placeholder="Write your script here..."
+              name="script"
+              value={content.script}
+              onChange={handleChangeInput}
+            ></textarea>
+          </div>
+          <p className={styles.privacy}>Privacy:</p>
           <div className={styles.radioBtns}>
-            <input
-              type="radio"
-              id="age1"
-              name="privacy"
-              value="Public"
-              onChange={handleChangeInput}
-            />
-            <input
-              type="radio"
-              id="age2"
-              name="privacy"
-              value="Unlisted"
-              onChange={handleChangeInput}
-            />
-            <input
-              type="radio"
-              id="age3"
-              name="privacy"
-              value="Private"
-              onChange={handleChangeInput}
-            />
+            <label>
+              <input
+                type="radio"
+                id="age1"
+                name="privacy"
+                value="Public"
+                onChange={handleChangeInput}
+              />
+              <span>Public 🌐</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                id="age2"
+                name="privacy"
+                value="Unlisted"
+                onChange={handleChangeInput}
+              />
+              <span>Unlisted 🔗</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                id="age3"
+                name="privacy"
+                value="Private"
+                onChange={handleChangeInput}
+              />
+              <span>Private 🔒</span>
+            </label>
+
             <br />
           </div>
-          <button className="btn btn-primary" onClick={submitHandler}>
+          <button
+            className={`btn btn-primary ${styles.uploadBtn}`}
+            onClick={submitHandler}
+          >
             Upload
           </button>
         </form>

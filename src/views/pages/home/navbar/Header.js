@@ -119,7 +119,7 @@ const Header = () => {
                     className={`justify-content-center flex-grow-1  ${styles.navItemsCenter}`}
                   >
                     <Nav.Link href="/home">Home</Nav.Link>
-                    <Nav.Link href="#action2">Upload</Nav.Link>
+                    <Nav.Link href="/upload">Upload</Nav.Link>
                   </Nav>
                   <div className={styles.btnWrapper}>
                     <button
