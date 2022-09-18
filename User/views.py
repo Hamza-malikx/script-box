@@ -109,21 +109,21 @@ def upload_content(request):
             thumbnail=data['image']
         )
 
-        # publicKey, privateKey = rsa.newkeys(512)
-        # encScript = rsa.encrypt(data['script'].encode(),
-        #                         publicKey)
+
 
         sc = Script.objects.create(
             script=data['script'],
             content=content,
         )
+        script_count = len(Script.objects.filter(content=content))
 
-        # key = PrivateKey.objects.create(
-        #     user=user,
-        #     script=sc,
-        #     privateKey= {'key': privateKey},
-        # )
+        apply_badge = ApplyBadgeCriteria.objects.filter(num_script=script_count).first()
 
+        if apply_badge:
+                bc = BadgeContent.objects.create(
+                    badge= apply_badge.badge,
+                    content=content
+                )
 
 
         serializer = ContentSerializer(content, many=False)
