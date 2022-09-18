@@ -20,11 +20,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Models
-from User.models import Script, Content, User, PrivateKey, NormalUser
+from User.models import *
 
 # Serializers
-from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, ScriptSerializer, NormalUserSerializer
-import rsa
+from User.serializers import *
 
 
 # --------------------------------------------------------------------------
@@ -96,7 +95,6 @@ def upload_content(request):
     try:
         data = request.data
         user = User.objects.get(username=data['user'])
-        print("Userrrrrrr::::::", request.FILES.get('image'))
         content = Content.objects.create(
             user=user,
             title=data['title'],
@@ -126,6 +124,8 @@ def upload_content(request):
         #     privateKey= {'key': privateKey},
         # )
 
+
+
         serializer = ContentSerializer(content, many=False)
         return Response(serializer.data)
 
@@ -135,11 +135,44 @@ def upload_content(request):
 
 
 @api_view(['POST'])
-def upload_image(request):
+def upload_content_image(request):
     try:
-        print(request.data['id'])
-        print("Userrrrrrr::::::", request.FILES.get('image'))
+
+        contentID = request.data['id']
+        content = Content.objects.get(id=contentID)
+        content.thumbnail = request.FILES.get('image')
+        content.save()
+         
         return Response("Uploaded Image")
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def upload_content_script(request):
+    try:
+        data = request.data
+        contentID = request.data['id']
+        content = Content.objects.get(id=contentID)
+
+        sc = Script.objects.create(
+            script=data['script'],
+            content=content,
+        )
+
+        script_count = len(Script.objects.filter(content=content))
+
+        apply_badge = ApplyBadgeCriteria.objects.filter(num_script=script_count).first()
+        if apply_badge:
+            bc = BadgeContent.objects.create(
+                badge= apply_badge.badge,
+                content=content
+            )
+
+
+        return Response("Uploaded Script")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
@@ -149,10 +182,20 @@ def upload_image(request):
 @api_view(['GET'])
 def get_content(self, pk):
     try:
-        print(pk)
         con = Content.objects.get(id=pk)
         Content.objects.filter(id=pk).update(views=con.views + 1)
         serializer = ContentSerializer(con, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_badges(self):
+    try:
+        bg = BadgeContent.objects.all()
+        serializer = BadgeContentSerializer(bg, many=True)
         return Response(serializer.data)
 
     except Exception as ex:

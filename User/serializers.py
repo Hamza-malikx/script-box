@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.fields import ReadOnlyField
 
-from User.models import Script, Content, NormalUser
+from User.models import *
 
 
 # --------------------------------------------------
@@ -54,7 +54,12 @@ class UserSerializerWithToken(UserSerializer):
 class ScriptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Script
-        fields = ['script', 'is_patched','is_encrypted']
+        fields = ['id', 'script', 'is_patched','is_encrypted']
+
+class ContentIDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Content
+        fields = ['id']
 
 
 # --------------------------------------------------
@@ -72,6 +77,35 @@ class ContentSerializer(serializers.ModelSerializer):
         return serializer.data
 
 # --------------------------------------------------
+
+class BadgeContentSerializer(serializers.ModelSerializer):
+    content = ReadOnlyField(source='content.id')
+    # content_id = serializers.ReadOnlyField(source='content.title')
+    badge = serializers.SerializerMethodField(read_only=True)
+    # content = ContentIDSerializer(many=False, read_only=True)
+    # content = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = BadgeContent
+        fields = ['badge','content']
+
+    def get_badge(self, obj):
+        bg = Badge.objects.get(name=obj.badge.name)
+        serializer = BadgeSerializer(bg, many=False)
+        return serializer.data
+
+    def get_content(self, obj):
+        print(obj)
+        con = Content.objects.get(id=obj)
+        serializer = ContentIDSerializer(con, many=False)
+        return serializer.data
+
+class BadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Badge
+        fields = '__all__'
+
+
 
 # --------------------------------------------------
 

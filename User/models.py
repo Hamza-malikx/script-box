@@ -79,7 +79,7 @@ class Content(models.Model):
 
 
 class Script(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     script = models.CharField(max_length=500, null=False)
     is_encrypted = models.BooleanField(default=False)
@@ -101,6 +101,65 @@ class PrivateKey(models.Model):
     script_id = models.CharField(null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.CharField(null=False, max_length=2000)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+
+
+class Badge(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
+    image = models.ImageField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def _str_(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ['id']
+
+class ApplyBadgeCriteria(models.Model):
+    badge= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    num_script = models.IntegerField(null=True,default=0)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class BadgeContent (models.Model):
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class  DraftContent (models.Model):
+    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content= models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class SuspendContent (models.Model):
+    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content= models.ForeignKey(User, on_delete=models.CASCADE)
 
     def _str_(self):
         return str(self.id)
