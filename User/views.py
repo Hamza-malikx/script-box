@@ -20,6 +20,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Models
+from AdminPanel.models import ApplyBadgeCriteria
 from User.models import *
 
 # Serializers

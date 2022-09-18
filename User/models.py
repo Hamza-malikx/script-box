@@ -124,15 +124,6 @@ class Badge(models.Model):
     class Meta:
         ordering = ['id']
 
-class ApplyBadgeCriteria(models.Model):
-    badge= models.ForeignKey(Badge, on_delete=models.CASCADE)
-    num_script = models.IntegerField(null=True,default=0)
-
-    def _str_(self):
-        return str(self.id)
-
-    class Meta:
-        ordering = ['id']
 
 
 class BadgeContent (models.Model):
@@ -146,7 +137,7 @@ class BadgeContent (models.Model):
         ordering = ['id']
 
 
-class  DraftContent (models.Model):
+class DraftContent (models.Model):
     user= models.ForeignKey(Badge, on_delete=models.CASCADE)
     content= models.ForeignKey(User, on_delete=models.CASCADE)
 
