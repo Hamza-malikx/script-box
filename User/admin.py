@@ -4,5 +4,8 @@ from .models import *
 
 admin.site.register(NormalUser)
 admin.site.register(Content)
+admin.site.register(Badge)
+admin.site.register(BadgeContent)
+admin.site.register(ApplyBadgeCriteria)
 admin.site.register(Script)
 admin.site.register(PrivateKey)

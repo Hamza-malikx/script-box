@@ -32,3 +32,10 @@ def getUsers(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def getContents(request):
+    content = Content.objects.all()
+    serializer = ContentSerializer(content, many=True)
+    return Response(serializer.data)
+
+

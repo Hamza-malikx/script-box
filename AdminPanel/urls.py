@@ -9,6 +9,8 @@ from .import views
 
 urlpatterns = [    
     path('', views.mainPage, name="mainPage"),
-    # User
     path('users/', views.getUsers, name="users"),
+    path('contents/', views.getContents, name="contents"),
+    
+    
 ]

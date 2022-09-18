@@ -23,14 +23,8 @@ class User(AbstractUser):
         MODERATOR = "MODERATOR", "Moderator"
         USER = "USER", "User"
 
-    # base_role = Role.ADMIN
-
     role = models.CharField(max_length=50, choices=Role.choices)
-
-    # def save(self, *args, **kwargs):
-    #     if not self.pk:
-    #         self.role = self.base_role
-    #         return super().save(*args, **kwargs)
+    old_username = models.CharField(max_length=200, null=True, blank=True)
         
     class Meta:
         ordering = ['id']
@@ -101,6 +95,78 @@ class PrivateKey(models.Model):
     script_id = models.CharField(null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     privateKey = models.CharField(null=False, max_length=2000)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+
+
+class Badge(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
+    image = models.ImageField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def _str_(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ['id']
+
+class ApplyBadgeCriteria(models.Model):
+    badge= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    num_script = models.IntegerField(null=True,default=0)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class BadgeContent (models.Model):
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class  DraftContent (models.Model):
+    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content= models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class SuspendContent (models.Model):
+    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
+    content= models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+class Notification(models.Model):
+    user = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    description = models.CharField(max_length=200)
+    message = models.CharField(max_length=100)
+    image = models.ImageField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def _str_(self):
         return str(self.id)
