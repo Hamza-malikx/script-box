@@ -347,3 +347,135 @@ def decrypt(scri_id, script, salt):
 
     secret = f.decrypt(script.encode())
     return secret
+
+
+@api_view(['POST'])
+def publish_comment(request):
+    try:
+        data = request.data
+        user = User.objects.get(username=data['user'])
+        content = Content.objects.get(title=data['content'])
+
+        comment = Comment.objects.create(
+            user=user,
+            content=content,
+            comment= data['comment']
+        )
+
+        serializer = CommentSerializer(comment, many=False)
+        return Response(serializer.data)
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_comment(request,pk):
+    try:
+        data = request.data
+        print(pk)
+        content = Content.objects.get(title=pk)
+        comment = Comment.objects.filter(content=content)
+
+
+        serializer = CommentSerializer(comment, many=True)
+        return Response(serializer.data)
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_recent_comment(request):
+    try:
+        data = request.data
+        comment = Comment.objects.all().order_by('-id')[:10]
+
+        serializer = CommentSerializer(comment, many=True)
+        return Response(serializer.data)
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_comment(request,pk):
+    try:
+        comment = Comment.objects.get(id=pk).delete()
+        return Response("Deleted")
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def like_comment(request,pk):
+    try:
+        co = Comment.objects.get(id=pk)
+        like = co.likes
+        comment = Comment.objects.filter(id=pk).update(likes=like+1)
+        serializer = CommentSerializer(co, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def disLike_comment(request,pk):
+    try:
+        co = Comment.objects.get(id=pk)
+        dlike = co.dislikes
+        comment = Comment.objects.filter(id=pk).update(dislikes=dlike+1)
+        serializer = CommentSerializer(co, many=False)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def add_fav_content(request):
+    try:
+        data = request.data
+        co = Content.objects.get(title=data['content'])
+        user = User.objects.get(username=data['user'])
+        if not FavContent.objects.filter(content=co).exists():
+            fav = FavContent.objects.create(
+                user= user,
+                content= co
+            )
+
+            serializer = FavSerializer(fav, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("Already added")
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_fav_content(request,pk):
+    try:
+        data = request.data
+        user = User.objects.get(username=pk)
+
+        fav = FavContent.objects.filter(
+            user= user
+        )
+
+        serializer = FavSerializer(fav, many=True)
+        return Response(serializer.data)
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def delete_fav_content(request,pk):
+    try:
+        fav = FavContent.objects.get(id=pk).delete()
+        return Response("Deleted")
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
