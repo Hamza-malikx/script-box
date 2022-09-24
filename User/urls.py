@@ -16,6 +16,7 @@ urlpatterns = [
     path('uploadScript/', views.upload_content_script, name='upload-script'),
     path('content/<str:pk>/', views.get_content, name='get-content'),
     path('badges/', views.get_badges, name='get-badges'),
+
     path('userContents/<str:pk>/', views.get_user_content, name='get-user-content'),
     path('allContent/', views.get_all_content, name='get-all-content'),
     path('updateContent/<str:pk>/', views.update_content, name='update-content'),
