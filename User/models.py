@@ -25,6 +25,7 @@ class User(AbstractUser):
 
     role = models.CharField(max_length=50, choices=Role.choices)
     old_username = models.CharField(max_length=200, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
         
     class Meta:
         ordering = ['id']
