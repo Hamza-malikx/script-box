@@ -38,16 +38,23 @@ def getUsers(request):
 def set_badge(request):
     try:
         data = request.data
-        badge_name = request.data['name']
+        id = request.data['Badgeid']
         badge_num = request.data['scriptNumber']
-        badge = Badge.objects.get(name=badge_name)
+        badge = Badge.objects.get(id=id)
 
-        bg = ApplyBadgeCriteria.objects.create(
-            badge=badge,
-            num_script=badge_num,
-        )
+        if not ApplyBadgeCriteria.objects.filter(badge=badge).exists():
+            bg = ApplyBadgeCriteria.objects.create(
+                badge=badge,
+                num_script=badge_num,
+            )
 
-        return Response("Uploaded badge criteria")
+            return Response("Uploaded badge criteria")
+        else:
+            ApplyBadgeCriteria.objects.filter(badge=badge).update(
+                num_script=badge_num,
+            )
+            return Response("Updated")
+
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}

@@ -50,7 +50,7 @@ class NormalUser(User):
 
 class Content(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200,unique=True)
     link = models.CharField(max_length=600)
     thumbnail = models.ImageField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
@@ -133,8 +133,8 @@ class BadgeContent (models.Model):
 
 
 class DraftContent (models.Model):
-    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
-    content= models.ForeignKey(User, on_delete=models.CASCADE)
+    user= models.ForeignKey(User, on_delete=models.CASCADE)
+    content= models.ForeignKey(Content, on_delete=models.CASCADE)
 
     def _str_(self):
         return str(self.id)
@@ -143,9 +143,9 @@ class DraftContent (models.Model):
         ordering = ['id']
 
 
-class SuspendContent (models.Model):
-    user= models.ForeignKey(Badge, on_delete=models.CASCADE)
-    content= models.ForeignKey(User, on_delete=models.CASCADE)
+class FavContent (models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
 
     def _str_(self):
         return str(self.id)
@@ -153,11 +153,13 @@ class SuspendContent (models.Model):
     class Meta:
         ordering = ['id']
 
-class Notification(models.Model):
-    user = models.ForeignKey(Badge, on_delete=models.CASCADE)
-    description = models.CharField(max_length=200)
-    message = models.CharField(max_length=100)
-    image = models.ImageField(null=True, blank=True)
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=500)
+    likes = models.IntegerField(blank=True,default=0)
+    dislikes = models.IntegerField(blank=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def _str_(self):

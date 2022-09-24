@@ -59,7 +59,7 @@ class ScriptSerializer(serializers.ModelSerializer):
 class ContentIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Content
-        fields = ['id']
+        fields = '__all__'
 
 
 # --------------------------------------------------
@@ -95,7 +95,6 @@ class BadgeContentSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_content(self, obj):
-        print(obj)
         con = Content.objects.get(id=obj)
         serializer = ContentIDSerializer(con, many=False)
         return serializer.data
@@ -108,6 +107,27 @@ class BadgeSerializer(serializers.ModelSerializer):
 
 
 # --------------------------------------------------
+
+class CommentSerializer(serializers.ModelSerializer):
+    content = ReadOnlyField(source='content.title')
+    user = ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+class FavSerializer(serializers.ModelSerializer):
+    content = serializers.SerializerMethodField(read_only=True)
+    user = ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = FavContent
+        fields = '__all__'
+
+    def get_content(self, obj):
+        con = Content.objects.get(title=obj.content.title)
+        serializer = ContentIDSerializer(con, many=False)
+        return serializer.data
 
 # --------------------------------------------------
 
