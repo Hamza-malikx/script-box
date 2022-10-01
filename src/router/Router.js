@@ -29,6 +29,12 @@ import HorizontalLayout from "@src/layouts/HorizontalLayout";
 // **component
 const Home = lazy(() => import("../views/pages/home/Home"));
 const Upload = lazy(() => import("../views/pages/upload/Upload"));
+const SpecificScrip = lazy(() =>
+  import("../views/pages/specificScript/SpecificScrip")
+);
+const UserProfile = lazy(() =>
+  import("../views/pages/userProfile/UserProfile")
+);
 const Router = () => {
   // ** Hooks
   const { layout, setLayout, setLastLayout } = useLayout();
@@ -101,7 +107,6 @@ const Router = () => {
        ** If user is not Logged in & route.meta.authRoute, !route.meta.publicRoute are undefined
        ** Then redirect user to login
        */
-
       return <Redirect to="/login" />;
     } else if (route.meta && route.meta.authRoute && isUserLoggedIn()) {
       // ** If route has meta and authRole and user is Logged in then redirect user to home page (DefaultRoute)
@@ -113,6 +118,19 @@ const Router = () => {
       // ** If none of the above render component
       return <route.component {...props} />;
     }
+    // if (!isUserLoggedIn()) {
+    //   /**
+    //    ** If user is not Logged in & route meta is undefined
+    //    ** OR
+    //    ** If user is not Logged in & route.meta.authRoute, !route.meta.publicRoute are undefined
+    //    ** Then redirect user to login
+    //    */
+    //   return <Redirect to="/login" />;
+    // } else {
+    //   // ** If none of the above render component
+    //   console.log({ ...props });
+    //   return <route.component {...props} />;
+    // }
   };
 
   // ** Return Route to Render
@@ -213,18 +231,20 @@ const Router = () => {
     <AppRouter basename={process.env.REACT_APP_BASENAME}>
       <Switch>
         {/* If user is logged in Redirect user to DefaultRoute else to login */}
-        <Route exact path="/" render={() => <Redirect to="/upload" />} />
+        <Route exact path="/" render={() => <Redirect to="/home" />} />
         <Route exact path="/home" component={Home} />
         <Route exact path="/upload" component={Upload} />
-
-        <Route
+        <Route exact path="/script/:id" component={SpecificScrip} />
+        <Route exact path="/user-profile" component={UserProfile} />
+        {/* <Route exact path="/dashboard" component={Dashboard} /> */}
+        {/* <Route
           exact
           path="/"
           // render={() => {
           //   return isUserLoggedIn() ? <Redirect to={DefaultRoute} /> : <Redirect to='/login' />
           // }}
           component={DefaultRoute}
-        />
+        /> */}
         {/* Not Auth Route */}
         <Route
           exact
@@ -236,7 +256,6 @@ const Router = () => {
           )}
         />
         {ResolveRoutes()}
-
         {/* NotFound Error page */}
         <Route path="*" component={Error} />
       </Switch>

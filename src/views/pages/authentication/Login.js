@@ -1,6 +1,6 @@
 // ** React Imports
 import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 // ** Custom Hooks
 import { useSkin } from "@hooks/useSkin";
@@ -73,6 +73,7 @@ const defaultValues = {
 
 const Login = () => {
   // ** Hooks
+  const history = useHistory();
   const { skin } = useSkin();
   // const dispatch = useDispatch()
   // const ability = useContext(AbilityContext)
@@ -89,11 +90,12 @@ const Login = () => {
       "https://ab-scriptbox.herokuapp.com/api/user/login/",
       data
     );
+    console.log(res);
     if (res.status === 200) {
       toast.success(
         <ToastContent
           name={data.fullName || data.username}
-          role={data.role || "admin"}
+          role={data.role || "user"}
         />,
         {
           icon: false,
@@ -102,26 +104,33 @@ const Login = () => {
           autoClose: 2000,
         }
       );
+      if (res.data.role === "ADMIN") {
+        localStorage.setItem(
+          "userData",
+          JSON.stringify({
+            ...res.data,
+            ability: [
+              {
+                action: "manage",
+                subject: "all",
+              },
+            ],
+          })
+        );
+        history.push("/dashboard/analytics");
+        window.location.reload(false);
+      } else {
+        localStorage.setItem("userData", JSON.stringify(res.data));
+        history.push("/home");
+      }
+
+      // var stored=res.data;
     }
-    console.log(res);
   };
   const onSubmit = (data) => {
     if (Object.values(data).every((field) => field.length > 0)) {
       console.log(data);
       signInHandler(data);
-      // useJwt
-      //   .login({ email: data.loginEmail, password: data.password })
-      //   .then(res => {
-      //     const data = { ...res.data.userData, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken }
-      //     dispatch(handleLogin(data))
-      //     ability.update(res.data.userData.ability)
-      //     history.push(getHomeRouteForLoggedInUser(data.role))
-      //     toast.success(
-      //       <ToastContent name={data.fullName || data.username || 'John Doe'} role={data.role || 'admin'} />,
-      //       { icon: false, transition: Slide, hideProgressBar: true, autoClose: 2000 }
-      //     )
-      //   })
-      //   .catch(err => console.log(err))
     } else {
       for (const key in data) {
         if (data[key].length === 0) {

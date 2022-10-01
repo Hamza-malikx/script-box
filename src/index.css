@@ -10,3 +10,6 @@
   top: 3.7px !important;
   left: 3.7px !important;
 }
+iframe{
+display:none !important;
+}

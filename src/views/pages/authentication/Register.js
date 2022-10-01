@@ -1,5 +1,5 @@
 // ** React Imports
-import { useContext } from "react";
+import { Fragment, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 // ** Custom Hooks
@@ -9,14 +9,15 @@ import useJwt from "@src/auth/jwt/useJwt";
 // ** Store & Actions
 // import { useDispatch } from 'react-redux'
 // import { handleLogin } from '@store/authentication'
+// ** Avatar
+import Avatar from "@components/avatar";
 
 // ** Axios
 import axios from "axios";
 
 // ** Third Party Components
 import { useForm, Controller } from "react-hook-form";
-import { Facebook, Twitter, Mail, GitHub } from "react-feather";
-
+import { Facebook, Twitter, Mail, GitHub, Coffee } from "react-feather";
 // ** Context
 import { AbilityContext } from "@src/utility/context/Can";
 
@@ -35,6 +36,7 @@ import {
   Input,
   FormFeedback,
 } from "reactstrap";
+import { toast, Slide } from "react-toastify";
 
 // ** Styles
 import "@styles/react/pages/page-authentication.scss";
@@ -45,6 +47,22 @@ const defaultValues = {
   username: "",
   password: "",
 };
+const ToastContent = ({ name, role }) => (
+  <Fragment>
+    <div className="toastify-header">
+      <div className="title-wrapper">
+        <Avatar size="sm" color="success" icon={<Coffee size={12} />} />
+        <h6 className="toast-title fw-bold">Welcome, {name}</h6>
+      </div>
+    </div>
+    <div className="toastify-body">
+      <span>
+        You have successfully registered as a {role} user to Vuexy. Now you can
+        begin with login and start to explore. Enjoy!
+      </span>
+    </div>
+  </Fragment>
+);
 
 const Register = () => {
   // ** Hooks
@@ -68,6 +86,22 @@ const Register = () => {
       "https://ab-scriptbox.herokuapp.com/api/user/register/",
       param
     );
+    if (res.status === 200) {
+      toast.success(
+        <ToastContent
+          name={res.data.fullName || res.data.username}
+          role={res.data.role || "normal"}
+        />,
+        {
+          icon: false,
+          transition: Slide,
+          hideProgressBar: true,
+          autoClose: 2000,
+        }
+      );
+      history.push("/login");
+      // localStorage.setItem("veuxySignUp", JSON.stringify(res.data));
+    }
     console.log(res);
   };
   const onSubmit = (data) => {
@@ -79,27 +113,6 @@ const Register = () => {
       data.terms === true
     ) {
       registration(data);
-      // const { username, email, password } = data;
-      // useJwt
-      //   .register({ username, email, password })
-      //   .then(res => {
-      //     if (res.data.error) {
-      //       for (const property in res.data.error) {
-      //         if (res.data.error[property] !== null) {
-      //           setError(property, {
-      //             type: 'manual',
-      //             message: res.data.error[property]
-      //           })
-      //         }
-      //       }
-      //     } else {
-      //       // const data = { ...res.data.user, accessToken: res.data.accessToken }
-      //       ability.update(res.data.user.ability)
-      //       // dispatch(handleLogin(data))
-      //       history.push('/')
-      //     }
-      //   })
-      //   .catch(err => console.log(err))
     } else {
       for (const key in data) {
         if (data[key].length === 0) {

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import styles from "./home.module.css";
 import Header from "./navbar/Header";
 import Switch from "react-switch";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
 const Home = () => {
+  const history = useHistory();
   const [content, setContent] = useState(null);
   const [switchState, setSwitchState] = useState(false);
   console.log();
@@ -15,19 +16,24 @@ const Home = () => {
   };
   const getContent = async () => {
     try {
-      const api = `${process.env.REACT_APP_Base_URL}/user/allContent/`;
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/allContent/`;
+
       var res = await axios.get(api);
       if (res.status === 200) {
         setContent(res.data);
       }
       console.log(res);
     } catch (e) {
-      console;
+      console.log(e);
     }
   };
   useEffect(() => {
     getContent();
   }, []);
+  console.log(content);
+  const specificScriptNavigator = (id) => {
+    history.push(`/script/${id}`);
+  };
   return (
     <div>
       <Header />
@@ -139,12 +145,19 @@ const Home = () => {
               <div className="row">
                 {content?.map((val, id) => {
                   return (
-                    <div className="col-lg-3 ps-1 pe-1" key={id}>
+                    <div
+                      className="col-lg-3 ps-1 pe-1"
+                      key={id}
+                      onClick={() => specificScriptNavigator(val.id)}
+                    >
                       <div
                         className={styles.items}
                         style={{
                           backgroundImage:
-                            "url(https://tr.rbxcdn.com/181b251f3eef05dea6266ce6659fb0ca/500/280/Image/Jpeg)",
+                            "url(" +
+                            process.env.REACT_APP_Base_URL +
+                            val.thumbnail +
+                            ")",
                         }}
                       >
                         <div className={styles.itemsHeader}>
