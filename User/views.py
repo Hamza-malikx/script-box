@@ -156,6 +156,7 @@ def upload_content(request):
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        print(message)
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -265,7 +266,7 @@ def update_content(request, pk):
             tag=data['tag'],
             type=data['type'],
             privacy=data['privacy'],
-            thumbnail=data['image']
+            # thumbnail=data['image']
         )
 
         script = Script.objects.filter(content=content).update(
