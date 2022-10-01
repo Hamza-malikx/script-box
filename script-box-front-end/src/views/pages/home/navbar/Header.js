@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./header.module.css";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -6,7 +6,12 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useHistory } from "react-router-dom";
+import { isUserLoggedIn } from "@utils";
+import avatar from "../../../../assets/images/avatars/avatar.png";
 const Header = () => {
+  const [username, setUsername] = useState(
+    JSON.parse(localStorage.getItem("userData"))
+  );
   let history = useHistory();
   const loginNavigator = () => {
     history.push("/login");
@@ -14,6 +19,21 @@ const Header = () => {
   const signUpNavigator = () => {
     history.push("/register");
   };
+  const logoutHandler = () => {
+    localStorage.removeItem("userData");
+    history.push("/");
+    window.location.reload(false);
+  };
+  const profileNavigator = () => {
+    history.push("/user-profile");
+  };
+  // var { username } = JSON.parse(localStorage.getItem("userData"));
+  useEffect(() => {
+    if (localStorage.getItem("userData") === null) {
+      // username = "null";
+    }
+  }, [username]);
+  console.log(username);
   return (
     <>
       <div className={styles.header}>
@@ -122,18 +142,43 @@ const Header = () => {
                     <Nav.Link href="/upload">Upload</Nav.Link>
                   </Nav>
                   <div className={styles.btnWrapper}>
-                    <button
-                      className={styles.signupBtn}
-                      onClick={signUpNavigator}
-                    >
-                      Sign Up
-                    </button>
-                    <button
-                      className={styles.loginBtn}
-                      onClick={loginNavigator}
-                    >
-                      Login
-                    </button>
+                    {!isUserLoggedIn() ? (
+                      <>
+                        <button
+                          className={styles.signupBtn}
+                          onClick={signUpNavigator}
+                        >
+                          Sign Up
+                        </button>
+                        <button
+                          className={styles.loginBtn}
+                          onClick={loginNavigator}
+                        >
+                          Login
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div
+                          className={styles.avatarWrapper}
+                          onClick={profileNavigator}
+                        >
+                          <img src={avatar} alt="" />
+                        </div>
+                        <div
+                          className={styles.userName}
+                          onClick={profileNavigator}
+                        >
+                          {username ? username.username : null}
+                        </div>
+                        <button
+                          className={styles.signupBtn}
+                          onClick={logoutHandler}
+                        >
+                          Logout
+                        </button>
+                      </>
+                    )}
                   </div>
                 </Offcanvas.Body>
               </Navbar.Offcanvas>

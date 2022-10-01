@@ -97,9 +97,20 @@
 }
 .pasteScriptWrapper textarea {
   min-height: 300px;
+  margin-bottom: 12px;
+}
+.pasteScriptWrapper textarea:last-child {
+  margin-bottom: 0;
 }
 .uploadBtn {
   margin-top: 15px;
   padding: 1rem;
   width: 100%;
+}
+.addScriptBtn {
+  margin-top: 15px;
+  padding: 1% 2%;
+  border: none;
+  background-color: #07aae1;
+  color: #fff;
 }

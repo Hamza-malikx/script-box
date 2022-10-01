@@ -16,7 +16,7 @@ Privacy = (
 )
 
 
-# ---------------- Tayyab --------------------------------------------
+# ---------------- Tayyab ------------------------------------------------
 class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"

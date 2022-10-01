@@ -1,86 +1,86 @@
 // ** React Imports
-import { useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 // ** Third Party Components
-import classnames from 'classnames'
-import { useTranslation } from 'react-i18next'
+import classnames from "classnames";
+import { useTranslation } from "react-i18next";
 
 // ** Reactstrap Imports
-import { Badge } from 'reactstrap'
+import { Badge } from "reactstrap";
 
 const VerticalNavMenuLink = ({
   item,
   activeItem,
   setActiveItem,
-  currentActiveItem
+  currentActiveItem,
 }) => {
   // ** Conditional Link Tag, if item has newTab or externalLink props use <a> tag else use NavLink
-  const LinkTag = item.externalLink ? 'a' : NavLink
+  const LinkTag = item.externalLink ? "a" : NavLink;
 
   // ** Hooks
-  const { t } = useTranslation()
-  const location = useLocation()
+  const { t } = useTranslation();
+  const location = useLocation();
 
   useEffect(() => {
     if (currentActiveItem !== null) {
-      setActiveItem(currentActiveItem)
+      setActiveItem(currentActiveItem);
     }
-  }, [location])
+  }, [location]);
 
   return (
     <li
       className={classnames({
-        'nav-item': !item.children,
+        "nav-item": !item.children,
         disabled: item.disabled,
-        active: item.navLink === activeItem
+        active: item.navLink === activeItem,
       })}
     >
       <LinkTag
-        className='d-flex align-items-center'
-        target={item.newTab ? '_blank' : undefined}
+        className="d-flex align-items-center"
+        target={item.newTab ? "_blank" : undefined}
         /*eslint-disable */
         {...(item.externalLink === true
           ? {
-              href: item.navLink || '/'
+              href: item.navLink || "/",
             }
           : {
-              to: item.navLink || '/',
-              isActive: match => {
+              to: item.navLink || "/",
+              isActive: (match) => {
                 if (!match) {
-                  return false
+                  return false;
                 }
 
                 if (
                   match.url &&
-                  match.url !== '' &&
+                  match.url !== "" &&
                   match.url === item.navLink
                 ) {
-                  currentActiveItem = item.navLink
+                  currentActiveItem = item.navLink;
                 }
-              }
+              },
             })}
-        onClick={e => {
+        onClick={(e) => {
           if (
             item.navLink.length === 0 ||
-            item.navLink === '#' ||
+            item.navLink === "#" ||
             item.disabled === true
           ) {
-            e.preventDefault()
+            e.preventDefault();
           }
         }}
       >
         {item.icon}
-        <span className='menu-item text-truncate'>{t(item.title)}</span>
+        <span className="menu-item text-truncate">{t(item.title)}</span>
 
         {item.badge && item.badgeText ? (
-          <Badge className='ms-auto me-1' color={item.badge} pill>
+          <Badge className="ms-auto me-1" color={item.badge} pill>
             {item.badgeText}
           </Badge>
         ) : null}
       </LinkTag>
     </li>
-  )
-}
+  );
+};
 
-export default VerticalNavMenuLink
+export default VerticalNavMenuLink;
