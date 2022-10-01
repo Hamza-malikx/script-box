@@ -65,6 +65,7 @@ class ContentIDSerializer(serializers.ModelSerializer):
 # --------------------------------------------------
 
 class ContentSerializer(serializers.ModelSerializer):
+    user = ReadOnlyField(source='user.username')
     script = serializers.SerializerMethodField(read_only=True)
 
     class Meta:

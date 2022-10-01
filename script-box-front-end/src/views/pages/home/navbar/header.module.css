@@ -57,3 +57,16 @@
   border-radius: 0.375rem;
   background: #16133e;
 }
+.avatarWrapper {
+  position: relative;
+  cursor: pointer;
+}
+.avatarWrapper img {
+  max-width: 3rem;
+  max-height: 3rem;
+  border-radius: 9999px;
+  height: auto;
+}
+.userName {
+  cursor: pointer;
+}

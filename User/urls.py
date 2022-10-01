@@ -11,6 +11,9 @@ urlpatterns = [
     path('login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('profile/', views.getUserProfile, name="user-profile"),
     path('register/', views.registerUser, name="register"),
+    path('update/<str:pk>/', views.updateUser, name='user-update'),
+    path('delete/<str:pk>/', views.deleteUser, name='user-delete'),
+    
     path('uploadContent/', views.upload_content, name='upload-content'),
     path('uploadContentImage/', views.upload_content_image, name='upload-image'),
     path('uploadScript/', views.upload_content_script, name='upload-script'),
@@ -29,12 +32,13 @@ urlpatterns = [
     path('publishComment/', views.publish_comment, name='publish_comment'),
     path('getComment/<str:pk>/', views.get_comment, name='get-comment'),
     path('deleteComment/<str:pk>/', views.delete_comment, name='delete-comment'),
-    path('disLikeComment/<str:pk>/', views.disLike_comment, name='disLike-comment'),
-    path('likeComment/<str:pk>/', views.like_comment, name='like-comment'),
+    path('disLikeComment/', views.disLike_comment, name='disLike-comment'),
+    path('likeComment/', views.like_comment, name='like-comment'),
     path('getRecentComments/', views.get_recent_comment, name='get-recent-comment'),
 
     # fav Content
     path('addFavContent/', views.add_fav_content, name='add_fav_content'),
+    path('checkFavContent/<str:pk>/', views.check_fav_content, name='check_fav_content'),
     path('getFavContent/<str:pk>/', views.get_fav_content, name='get_fav_content'),
     path('deleteFavContent/<str:pk>/', views.delete_fav_content, name='delete_fav_content'),
 

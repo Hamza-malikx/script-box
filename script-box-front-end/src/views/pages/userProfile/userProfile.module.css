@@ -1,0 +1,126 @@
+.profile {
+  padding: 50px 0;
+  max-width: 647px;
+  width: 100%;
+  margin: auto;
+}
+.profile h2 {
+  color: #07aae1;
+  font-weight: 600;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  text-align: center;
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+}
+.avatarWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  margin: auto;
+}
+.avatarWrapper img {
+  width: 10rem;
+  height: 10rem;
+}
+.editAvatarBtnWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #07aae1;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.verifiedBadge {
+  padding: 0.25rem 0.375rem;
+  text-align: center;
+  width: fit-content;
+  margin: 25px auto;
+  background-color: #07aae1;
+  color: #fff;
+  border-radius: 3px;
+}
+.verifiedBadge svg {
+  margin-left: 5px;
+}
+.editWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+/* .editWrapper:last-child {
+  margin-bottom: 0px;
+} */
+.editWrapper p {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.editWrapper h6 {
+  font-size: 15px;
+  font-weight: 900;
+}
+.editBtn {
+  padding: 10.9px 18.2px;
+  background-color: #07aae1;
+  color: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.logoutBtn {
+  padding: 10.9px 18.2px;
+  background-color: #07aae1;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: center;
+  color: #fff;
+}
+/* editBio */
+.editBio label {
+  font-size: 14.56px;
+  margin-bottom: 8px;
+}
+.editBio input {
+  padding: 1.25rem 2rem;
+  border: 2px solid #e4e4e7;
+  border-radius: 0.375rem;
+  width: 100%;
+}
+.editBio input:focus {
+  outline: none;
+}
+.editsWrapper {
+  margin-top: 45.48px;
+  display: flex;
+  justify-content: space-between;
+}
+.saveBtn {
+  background-color: #07aae1;
+  border: none;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  width: 48%;
+}
+.cancelBtn {
+  background-color: rgba(220, 38, 38, 1);
+  border: none;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  width: 48%;
+}
+.yourScripts h4 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 500;
+  color: #16133e;
+}

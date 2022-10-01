@@ -9,7 +9,6 @@ from .import views
 
 urlpatterns = [    
     path('', views.mainPage, name="mainPage"),
-    # User
     path('users/', views.getUsers, name="users"),
     path('setBadge/', views.set_badge, name='set-badge'),
     path('getBadges/', views.get_badges, name='get-badges'),
