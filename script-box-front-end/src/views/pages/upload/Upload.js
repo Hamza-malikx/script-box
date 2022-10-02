@@ -60,7 +60,6 @@ const Upload = () => {
       console.log(content);
       console.log(formData);
       if (res.status === 200) {
-        console.log("dsdsdsd");
         console.log(res);
         formData.append("id", res?.data?.id);
         const { data } = await axios.post(

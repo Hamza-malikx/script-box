@@ -154,6 +154,7 @@ class FavContent (models.Model):
         ordering = ['id']
 
 
+
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
@@ -161,6 +162,17 @@ class Comment(models.Model):
     likes = models.IntegerField(blank=True,default=0)
     dislikes = models.IntegerField(blank=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return str(self.id)
+
+    class Meta:
+        ordering = ['id']
+
+
+class LikeCommentCheck (models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
     def _str_(self):
         return str(self.id)

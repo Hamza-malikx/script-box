@@ -1,9 +1,75 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import Header from "../home/navbar/Header";
 import img from "../../../assets/images/avatars/xyz.jpg";
 import avtr from "../../../assets/images/avatars/avatar.png";
-const SpecificScrip = () => {
+import axios from "axios";
+
+const SpecificScrip = ({ match }) => {
+  const [content, setContent] = useState(null);
+  const [favCheck, setFavCheck] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+
+  const favClick = async (e) => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_Base_URL}/api/user/addFavContent/`,
+      { content: content.title, user: content.user }
+    );
+    alert(data);
+  };
+
+  const postComment = async (e) => {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_Base_URL}/api/user/publishComment/`,
+      { content: content.title, user: content.user, comment: comment }
+    );
+    if (data === "Commented Already") {
+      alert(data);
+    }
+  };
+  const likeComment = async (e) => {
+    console.log(e);
+    // const { data } = await axios.post(
+    //     `${process.env.REACT_APP_Base_URL}/api/user/publishComment/`,
+    //     {'content':content.title,
+    //       'user':content.user, 'comment':comment},
+    // );
+    // if (data === "Commented Already")
+    // {
+    //   alert(data)
+    // }
+  };
+
+  const getContent = async () => {
+    try {
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/content/${match.params.id}/`;
+
+      var res = await axios.get(api);
+
+      if (res.status === 200) {
+        console.log(res.data);
+        setContent(res.data);
+
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_Base_URL}/api/user/checkFavContent/${res.data.title}/`
+        );
+        const { data: data2 } = await axios.get(
+          `${process.env.REACT_APP_Base_URL}/api/user/getComment/${res.data.title}/`
+        );
+
+        setComments(data2);
+        setFavCheck(data);
+      }
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    getContent();
+  }, []);
+
   return (
     <div>
       <Header />
@@ -12,7 +78,13 @@ const SpecificScrip = () => {
           <div className={styles.hero}>
             <div className={styles.heroLeft}>
               <div className={styles.heroLeftRel}>
-                <img src={img} alt="" />
+                <img
+                  src={
+                    content &&
+                    process.env.REACT_APP_Base_URL + content.thumbnail
+                  }
+                  alt=""
+                />
                 <div className={styles.views}>
                   <div>
                     <svg
@@ -35,7 +107,7 @@ const SpecificScrip = () => {
                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                       ></path>
                     </svg>{" "}
-                    64 views
+                    {content && content.views}
                   </div>
                 </div>
                 <div className={styles.free}>
@@ -52,7 +124,7 @@ const SpecificScrip = () => {
                         clipRule="evenodd"
                       ></path>
                     </svg>{" "}
-                    Free
+                    {content && content.type}
                   </div>
                 </div>
               </div>
@@ -63,7 +135,7 @@ const SpecificScrip = () => {
                   className="text-4xl flex items-center gap-x-3 font-500 color-dark dark:text-white"
                   style={{ overflowWrap: "anywhere" }}
                 >
-                  DaddWare Case Opener GUI
+                  {content && content.title}
                 </h1>
                 <span className="font-500 color-dark dark:text-white">
                   Counter Blox: Remastered
@@ -72,7 +144,7 @@ const SpecificScrip = () => {
                   <span className="text-md">Uploaded by</span>
                   <a href="#">
                     <img src={avtr} alt="" />
-                    DEORAdaddywaredev
+                    {content && content.user}
                   </a>
                 </strong>
                 <div className="flex items-center gap-x-3">
@@ -112,7 +184,12 @@ const SpecificScrip = () => {
               <div className={styles.heroRightLower}>
                 <div className={styles.btnWrapper}>
                   <div className={styles.btnWrapperLeft}>
-                    <a href="#" className={styles.playGameBtn}>
+                    <a
+                      href={content && content.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.playGameBtn}
+                    >
                       Play Game{" "}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -225,25 +302,28 @@ const SpecificScrip = () => {
                     </svg>
                     <span className="font-400 dark:text-white text-sm">0</span>{" "}
                   </button>
-                  <button>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="#9B9B9B"
-                      className={`h-6 w-6 ${styles.favoriteIcon}`}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                      ></path>
-                    </svg>{" "}
-                    <span className="font-400 dark:text-white text-sm">
-                      Favourite
-                    </span>{" "}
-                  </button>
+                  {!favCheck && (
+                    <button onClick={favClick}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="#9B9B9B"
+                        className={`h-6 w-6 ${styles.favoriteIcon}`}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                        ></path>
+                      </svg>{" "}
+                      <span className="font-400 dark:text-white text-sm">
+                        Favourite
+                      </span>{" "}
+                    </button>
+                  )}
+
                   <button>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -280,30 +360,34 @@ const SpecificScrip = () => {
           Hope you all have fun enjoy &lt;3 D E O R A/Ragggy#0001
         </p>
       </div>
-      <div className={styles.script}>
-        <div className={styles.scriptHeader}>
-          <h6 className="font-400 text-lg hover:underline dark:text-white">
-            View Raw
-          </h6>
-        </div>
-        <div className={styles.scriptGap}></div>
-        <textarea
-          disabled="disabled"
-          name="script"
-          placeholder="Write your script here..."
-          cols="30"
-          rows="10"
-        >
-          --[ D E O R A/Ragggy#0001 WAS HERE DADDYWARE PRIVATE CB SCRIPT ]--
-          loadstring(game:HttpGet("https://raw.githubusercontent.com/DEORA2/j67j67j67j6j677j/main/Protected.lua"))()
-        </textarea>
-      </div>
+
+      {content &&
+        content.script.map((val) => (
+          <div className={styles.script}>
+            <div className={styles.scriptHeader}>
+              <h6 className="font-400 text-lg hover:underline dark:text-white">
+                View Raw
+              </h6>
+            </div>
+            <div className={styles.scriptGap}></div>
+            <textarea
+              disabled="disabled"
+              name="script"
+              placeholder="Write your script here..."
+              cols="30"
+              rows="10"
+            >
+              {val.script}
+            </textarea>
+          </div>
+        ))}
+
       <div className={styles.comments}>
         <div className={styles.commentsHeader}>
           <div className={styles.commentsHeaderWrapper}>
             <span className="font-400 text-lg dark:text-white"> Comments </span>
             <div className="relative">
-              <span className={styles.commentsCount}>1</span>{" "}
+              <span className={styles.commentsCount}>{comments.length}</span>{" "}
               <svg
                 width="35"
                 height="30"
@@ -320,82 +404,91 @@ const SpecificScrip = () => {
           </div>
         </div>
         <div className={styles.commentsRest}>
-          <div className={styles.commentsMapper}>
-            <div className={styles.commentsMapperLeft}>
-              <div className={styles.commentsMapperLeftProfileWrapper}>
-                <img src={avtr} alt="" />
-              </div>
-              <div className={styles.commentsMapperLeftProfileContentWrapper}>
-                <a href="#">IDunnoWhatHaxingIs</a>
-                <p className="color-dark flex-grow text-base dark:text-white">
-                  <span>don't work nothing appear</span>
-                </p>
-                <button className="color-gray text-xs dark:text-rblx-gray dark:hover:text-white">
-                  Report
-                </button>
-              </div>
-            </div>
-            <div className={styles.commentsMapperRight}>
-              <span className="color-gray text-sm font-400 whitespace-nowrap dark:text-rblx-gray">
-                3 hours ago
-              </span>
-              <div className="flex space-x-4 justify-end">
-                <button
-                  type="button"
-                  name="like"
-                  className="flex gap-2 items-center"
-                >
-                  <svg
-                    width="22"
-                    height="18"
-                    viewBox="0 0 22 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+          {comments &&
+            comments.map((val) => (
+              <div className={styles.commentsMapper}>
+                <div className={styles.commentsMapperLeft}>
+                  <div className={styles.commentsMapperLeftProfileWrapper}>
+                    <img src={avtr} alt="" />
+                  </div>
+                  <div
+                    className={styles.commentsMapperLeftProfileContentWrapper}
                   >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M8.67387 1.36754C8.94944 0.55086 9.72309 0 10.5945 0H11.8895C13.0076 0 13.914 0.895431 13.914 2V6H19.362C20.867 6 21.8459 7.56463 21.1728 8.89443L17.1237 16.8944C16.7808 17.572 16.0798 18 15.3129 18H8.46599C7.69915 18 6.99813 17.572 6.65519 16.8944L5.09794 13.8177C4.85782 13.3433 4.8183 12.794 4.9881 12.2908L8.67387 1.36754Z"
-                      fill="#9B9B9B"
-                    ></path>{" "}
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.1114 6.05132C4.64177 6.22596 4.92841 6.79228 4.75161 7.31623L2.99226 12.5303C2.90736 12.7819 2.92712 13.0565 3.04718 13.2938L4.69669 16.5528C4.94671 17.0468 4.74403 17.6474 4.24399 17.8944C3.74395 18.1414 3.13591 17.9412 2.88589 17.4472L1.23638 14.1882C0.876187 13.4765 0.81692 12.6527 1.07161 11.8979L2.83097 6.68377C3.00776 6.15983 3.58103 5.87667 4.1114 6.05132Z"
-                      fill="#9B9B9B"
-                    ></path>
-                  </svg>{" "}
-                </button>{" "}
-                <button
-                  type="button"
-                  name="dislike"
-                  className="flex gap-2 items-center"
-                >
-                  <svg
-                    width="22"
-                    height="18"
-                    viewBox="0 0 22 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="transform rotate-180"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M8.67387 1.36754C8.94944 0.55086 9.72309 0 10.5945 0H11.8895C13.0076 0 13.914 0.895431 13.914 2V6H19.362C20.867 6 21.8459 7.56463 21.1728 8.89443L17.1237 16.8944C16.7808 17.572 16.0798 18 15.3129 18H8.46599C7.69915 18 6.99813 17.572 6.65519 16.8944L5.09794 13.8177C4.85782 13.3433 4.8183 12.794 4.9881 12.2908L8.67387 1.36754Z"
-                      fill="#9B9B9B"
-                    ></path>{" "}
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M4.1114 6.05132C4.64177 6.22596 4.92841 6.79228 4.75161 7.31623L2.99226 12.5303C2.90736 12.7819 2.92712 13.0565 3.04718 13.2938L4.69669 16.5528C4.94671 17.0468 4.74403 17.6474 4.24399 17.8944C3.74395 18.1414 3.13591 17.9412 2.88589 17.4472L1.23638 14.1882C0.876187 13.4765 0.81692 12.6527 1.07161 11.8979L2.83097 6.68377C3.00776 6.15983 3.58103 5.87667 4.1114 6.05132Z"
-                      fill="#9B9B9B"
-                    ></path>
-                  </svg>{" "}
-                </button>
+                    <a href="#">{val.user}</a>
+                    <p className="color-dark flex-grow text-base dark:text-white">
+                      <span>{val.comment}</span>
+                    </p>
+                    <button className="color-gray text-xs dark:text-rblx-gray dark:hover:text-white">
+                      Report
+                    </button>
+                  </div>
+                </div>
+                <div className={styles.commentsMapperRight}>
+                  <span className="color-gray text-sm font-400 whitespace-nowrap dark:text-rblx-gray">
+                    {val.created_at}
+                  </span>
+                  <div className="flex space-x-4 justify-end">
+                    <button
+                      id={val.id}
+                      value={val.id}
+                      type="button"
+                      name="like"
+                      onClick={likeComment}
+                      className="flex gap-2 items-center"
+                    >
+                      <svg
+                        width="22"
+                        height="18"
+                        viewBox="0 0 22 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.67387 1.36754C8.94944 0.55086 9.72309 0 10.5945 0H11.8895C13.0076 0 13.914 0.895431 13.914 2V6H19.362C20.867 6 21.8459 7.56463 21.1728 8.89443L17.1237 16.8944C16.7808 17.572 16.0798 18 15.3129 18H8.46599C7.69915 18 6.99813 17.572 6.65519 16.8944L5.09794 13.8177C4.85782 13.3433 4.8183 12.794 4.9881 12.2908L8.67387 1.36754Z"
+                          fill="#9B9B9B"
+                        ></path>{" "}
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M4.1114 6.05132C4.64177 6.22596 4.92841 6.79228 4.75161 7.31623L2.99226 12.5303C2.90736 12.7819 2.92712 13.0565 3.04718 13.2938L4.69669 16.5528C4.94671 17.0468 4.74403 17.6474 4.24399 17.8944C3.74395 18.1414 3.13591 17.9412 2.88589 17.4472L1.23638 14.1882C0.876187 13.4765 0.81692 12.6527 1.07161 11.8979L2.83097 6.68377C3.00776 6.15983 3.58103 5.87667 4.1114 6.05132Z"
+                          fill="#9B9B9B"
+                        ></path>
+                      </svg>{" "}
+                    </button>{" "}
+                    <button
+                      type="button"
+                      name="dislike"
+                      className="flex gap-2 items-center"
+                    >
+                      <svg
+                        width="22"
+                        height="18"
+                        viewBox="0 0 22 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="transform rotate-180"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.67387 1.36754C8.94944 0.55086 9.72309 0 10.5945 0H11.8895C13.0076 0 13.914 0.895431 13.914 2V6H19.362C20.867 6 21.8459 7.56463 21.1728 8.89443L17.1237 16.8944C16.7808 17.572 16.0798 18 15.3129 18H8.46599C7.69915 18 6.99813 17.572 6.65519 16.8944L5.09794 13.8177C4.85782 13.3433 4.8183 12.794 4.9881 12.2908L8.67387 1.36754Z"
+                          fill="#9B9B9B"
+                        ></path>{" "}
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M4.1114 6.05132C4.64177 6.22596 4.92841 6.79228 4.75161 7.31623L2.99226 12.5303C2.90736 12.7819 2.92712 13.0565 3.04718 13.2938L4.69669 16.5528C4.94671 17.0468 4.74403 17.6474 4.24399 17.8944C3.74395 18.1414 3.13591 17.9412 2.88589 17.4472L1.23638 14.1882C0.876187 13.4765 0.81692 12.6527 1.07161 11.8979L2.83097 6.68377C3.00776 6.15983 3.58103 5.87667 4.1114 6.05132Z"
+                          fill="#9B9B9B"
+                        ></path>
+                      </svg>{" "}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            ))}
+
           <div className={styles.addCommentWrapper}>
             <div className={styles.commentsMapperLeftProfileWrapper}>
               <img src={avtr} alt="" />
@@ -404,11 +497,14 @@ const SpecificScrip = () => {
               <textarea
                 name="comment"
                 placeholder="Comment your thoughts..."
+                onChange={(e) => setComment(e.target.value)}
                 rows="6"
               ></textarea>
             </div>
           </div>
-          <div className={styles.postBtn}>Post</div>
+          <div className={styles.postBtn} onClick={postComment}>
+            Post
+          </div>
         </div>
       </div>
       <div className={styles.tags}>

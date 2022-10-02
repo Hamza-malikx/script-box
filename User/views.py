@@ -120,6 +120,7 @@ def upload_content(request):
     try:
         data = request.data
         user = User.objects.get(username=data['user'])
+
         content = Content.objects.create(
             user=user,
             title=data['title'],
@@ -134,7 +135,7 @@ def upload_content(request):
             thumbnail=data['image']
         )
 
-
+        print(data['script'])
 
         sc = Script.objects.create(
             script=data['script'],
@@ -380,14 +381,18 @@ def publish_comment(request):
         user = User.objects.get(username=data['user'])
         content = Content.objects.get(title=data['content'])
 
-        comment = Comment.objects.create(
-            user=user,
-            content=content,
-            comment= data['comment']
-        )
+        if not Comment.objects.filter(content=content,user=user).exists():
+            comment = Comment.objects.create(
+                user=user,
+                content=content,
+                comment= data['comment']
+            )
 
-        serializer = CommentSerializer(comment, many=False)
-        return Response(serializer.data)
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("Commented Already")
+
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
@@ -396,13 +401,12 @@ def publish_comment(request):
 def get_comment(request,pk):
     try:
         data = request.data
-        print(pk)
         content = Content.objects.get(title=pk)
         comment = Comment.objects.filter(content=content)
-
-
         serializer = CommentSerializer(comment, many=True)
+        print(serializer.data)
         return Response(serializer.data)
+
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
@@ -429,31 +433,42 @@ def delete_comment(request,pk):
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def like_comment(request,pk):
+def like_comment(request):
     try:
-        co = Comment.objects.get(id=pk)
-        like = co.likes
-        comment = Comment.objects.filter(id=pk).update(likes=like+1)
-        serializer = CommentSerializer(co, many=False)
-        return Response(serializer.data)
+        data = request.data
+        user = User.objects.get(username=data['user'])
+        comment = Comment.objects.get(id=data['id'])
+        if not LikeCommentCheck.objects.filter(comment=comment,user=user).exists():
+            like = comment.likes
+            comment = Comment.objects.filter(id=data['id']).update(likes=like+1)
+            LikeCommentCheck.objects.create(comment=comment,user=user)
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("Liked Already")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def disLike_comment(request,pk):
+def disLike_comment(request):
     try:
-        co = Comment.objects.get(id=pk)
-        dlike = co.dislikes
-        comment = Comment.objects.filter(id=pk).update(dislikes=dlike+1)
-        serializer = CommentSerializer(co, many=False)
-        return Response(serializer.data)
+        data = request.data
+        user = User.objects.get(username=data['user'])
+        comment = Comment.objects.get(id=data['id'])
+        if LikeCommentCheck.objects.filter(comment=comment,user=user).exists():
+            like = comment.likes
+            comment = Comment.objects.filter(id=data['id']).update(likes=like-1)
+            LikeCommentCheck.objects.filter(comment=comment,user=user).delete()
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("Disliked")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 def add_fav_content(request):
@@ -468,9 +483,22 @@ def add_fav_content(request):
             )
 
             serializer = FavSerializer(fav, many=False)
-            return Response(serializer.data)
+            return Response("Added to Favorites")
         else:
-            return Response("Already added")
+            return Response("Already Added")
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def check_fav_content(request, pk):
+    try:
+        data = request.data
+        co = Content.objects.get(title=pk)
+        return Response(FavContent.objects.filter(content=co).exists())
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
