@@ -80,20 +80,27 @@ def registerUser(request):
 
 # -----------------------------------------------------------
 
+@api_view(['GET'])
+def getUser(request, pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
 @api_view(['PUT'])
 # @permission_classes([IsAuthenticated])
 def updateUser(request, pk):
     user = User.objects.get(id=pk)
     data = request.data
-        
+
     user.username = data['username']
-    user.email = data['email']
+    # user.email = data['email']
     user.bio = data['bio']
     user.password = make_password(data['password'])
-    
     user.save()
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
+
 
 @api_view(['DELETE'])
 # @permission_classes([IsAdminUser])

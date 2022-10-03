@@ -1,13 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./userProfile.module.css";
 import Header from "../home/navbar/Header";
 import avatar from "../../../assets/images/avatars/avatar.png";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
 
 const UserProfile = () => {
   const [bio, editBio] = useState(false);
   const [username, editUsername] = useState(false);
   const [editPass, setEditPass] = useState(false);
+  const [loadSite, setLoadSite] = useState(false);
+
+  const [userData, setUserData] = useState();
+
+  const [userBio, setUserBio] = useState(userData?.bio);
+  const [userUsername, setUserUsername] = useState(userData?.username);
+  const [userPassword, setUserPassword] = useState(userData?.password);
+
+  const getUserDetails = useCallback(async () => {
+    try {
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/get-user/2/`;
+
+      var res = await axios.get(api);
+      if (res.status === 200) {
+        setUserData(res.data);
+        console.log("res after 200: ", res);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, [setUserData]);
+
+  useEffect(() => {
+    getUserDetails();
+    setLoadSite(false);
+  }, [getUserDetails, loadSite]);
+
+  useEffect(() => {
+    setUserBio(userData?.bio);
+    setUserUsername(userData?.username);
+    setUserPassword(userData?.password);
+  }, [userData]);
+
+  const updateUserDetailHandler = async () => {
+    editBio(false);
+    editUsername(false);
+    setEditPass(false);
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const apiData = {
+      bio: userBio,
+      username: userUsername,
+      password: userPassword,
+    };
+    try {
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/update/2/`;
+
+      var res = await axios.put(api, apiData, config);
+      if (res.status === 200) {
+        console.log("res after 200: ", res);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setLoadSite(true);
+  };
+
   const history = useHistory();
   const logoutNavigator = () => {
     localStorage.removeItem("userData");
@@ -66,9 +128,21 @@ const UserProfile = () => {
               {bio === true ? (
                 <div className={styles.editBio}>
                   <label>Edit Bio</label>
-                  <input type="text"></input>
+                  <input
+                    type="text"
+                    value={userBio}
+                    onChange={(e) => {
+                      setUserBio(e.target.value);
+                    }}
+                  ></input>
                   <div className={styles.editsWrapper}>
-                    <div className={styles.saveBtn}>Save Bio</div>
+                    <div
+                      className={styles.saveBtn}
+                      // onClick={() => editUsername(false)}
+                      onClick={(e) => updateUserDetailHandler()}
+                    >
+                      Save Bio
+                    </div>
                     <div
                       className={styles.cancelBtn}
                       onClick={() => editBio(false)}
@@ -81,9 +155,20 @@ const UserProfile = () => {
               {username === true ? (
                 <div className={styles.editBio}>
                   <label>Edit Username</label>
-                  <input type="text"></input>
+                  <input
+                    type="text"
+                    value={userUsername}
+                    onChange={(e) => {
+                      setUserUsername(e.target.value);
+                    }}
+                  ></input>
                   <div className={styles.editsWrapper}>
-                    <div className={styles.saveBtn}>Update Username</div>
+                    <div
+                      className={styles.saveBtn}
+                      onClick={(e) => updateUserDetailHandler()}
+                    >
+                      Update Username
+                    </div>
                     <div
                       className={styles.cancelBtn}
                       onClick={() => editUsername(false)}
@@ -96,7 +181,12 @@ const UserProfile = () => {
               {editPass === true ? (
                 <div className={styles.editBio}>
                   <label>Current Password</label>
-                  <input type="text"></input>
+                  <input
+                    type="text"
+                    onChange={(e) => {
+                      setUserPassword(e.target.value);
+                    }}
+                  ></input>
                   <label>New Password</label>
                   <input type="text"></input>
                   <div className={styles.editsWrapper}>
@@ -116,7 +206,7 @@ const UserProfile = () => {
               <div className={styles.editWrapper}>
                 <div>
                   <p>Bio</p>
-                  <h6>Hi</h6>
+                  <h6>{userData?.bio}</h6>
                 </div>
                 <div className={styles.editBtn} onClick={() => editBio(true)}>
                   Edit Bio
@@ -126,7 +216,7 @@ const UserProfile = () => {
               <div className={styles.editWrapper}>
                 <div>
                   <p>Username</p>
-                  <h6>xyz</h6>
+                  <h6>{userData?.username}</h6>
                 </div>
                 <div
                   className={styles.editBtn}
@@ -150,7 +240,7 @@ const UserProfile = () => {
               <div className={styles.editWrapper}>
                 <div>
                   <p>Joined Date</p>
-                  <h6>Sat Aug 13 2022</h6>
+                  <h6>{userData?.date_joined}</h6>
                 </div>
                 <div
                   className={styles.editBtn}

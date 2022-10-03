@@ -8,6 +8,7 @@ import axios from "axios";
 const SpecificScrip = ({ match }) => {
   const [content, setContent] = useState(null);
   const [favCheck, setFavCheck] = useState(false);
+  const [loadSite, setLoadSite] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
@@ -27,7 +28,9 @@ const SpecificScrip = ({ match }) => {
     if (data === "Commented Already") {
       alert(data);
     }
+    setLoadSite(true);
   };
+
   const likeComment = async (e) => {
     console.log(e);
     // const { data } = await axios.post(
@@ -68,7 +71,8 @@ const SpecificScrip = ({ match }) => {
   };
   useEffect(() => {
     getContent();
-  }, []);
+    setLoadSite(false);
+  }, [loadSite]);
 
   return (
     <div>
