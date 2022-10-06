@@ -15,7 +15,7 @@ from AdminPanel.models import ApplyBadgeCriteria
 from User.models import Script, Content, User, Badge
 # Serializers
 from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, BadgeSerializer
-from .serializers import StatSerializer
+from .serializers import ScriptSerializer, StatSerializer
 # Create your views here.
 
 @api_view(['GET'])
@@ -46,6 +46,31 @@ def getStatistics(request):
         }
     )
 
+
+@api_view(['PUT'])
+def patch_user_script(request, pk):
+    script = Script.objects.all(id=pk)
+    data = request.data
+    script.is_patched = data['isPatched']
+    script.save()
+    serializer = ScriptSerializer(script, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def delet_or_suspend_user(request, pk):
+    user = User.objects.all(id=pk)
+    data = request.data
+    if data == 'delete':
+        user.delete()
+    else:    
+        user.is_active = data['isActive']
+        user.save()
+    serializer = ScriptSerializer(User, many=False)
+    return Response(serializer.data)
+
+
+# Shahab Section Below ----------------------------------------------
 
 @api_view(['POST'])
 def set_badge(request):
