@@ -11,7 +11,7 @@ import uiElements from "./ui-elements";
 // ** Merge & Export
 export default [
   ...dashboards,
-  ...apps,
+  // ...apps,
   //   ...pages,
   //   ...uiElements,
   ...forms,

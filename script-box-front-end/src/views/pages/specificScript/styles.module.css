@@ -65,8 +65,9 @@
   row-gap: 0.75rem;
   display: flex;
   flex-direction: column;
-  max-width: 32rem;
   justify-content: space-between;
+  max-width: 27rem;
+  width: 100%;
 }
 .heroRightUpper {
   row-gap: 0.75rem;
@@ -385,4 +386,7 @@
   display: flex;
   align-items: center;
   gap: 0 12px;
+}
+.fillSvg path {
+  fill: #000;
 }

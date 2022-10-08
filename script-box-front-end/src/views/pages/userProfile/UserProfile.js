@@ -16,10 +16,13 @@ const UserProfile = () => {
   const [userBio, setUserBio] = useState(userData?.bio);
   const [userUsername, setUserUsername] = useState(userData?.username);
   const [userPassword, setUserPassword] = useState(userData?.password);
-
+  const [favoriteC, setFavoriteC] = useState([]);
+  const [userDetails, setUserDetails] = useState(
+    JSON.parse(localStorage.getItem("userData"))
+  );
   const getUserDetails = useCallback(async () => {
     try {
-      const api = `${process.env.REACT_APP_Base_URL}/api/user/get-user/2/`;
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/get-user/${userDetails.id}/`;
 
       var res = await axios.get(api);
       if (res.status === 200) {
@@ -58,7 +61,7 @@ const UserProfile = () => {
       password: userPassword,
     };
     try {
-      const api = `${process.env.REACT_APP_Base_URL}/api/user/update/2/`;
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/update/${userDetails.id}/`;
 
       var res = await axios.put(api, apiData, config);
       if (res.status === 200) {
@@ -76,6 +79,27 @@ const UserProfile = () => {
     history.push("/");
     window.location.reload(false);
   };
+  const getFavoriteScripts = async () => {
+    try {
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/getFavContent/${userDetails.username}/`;
+      console.log("userDetails.username", userDetails.username);
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      var res = await axios.get(api, config);
+      if (res.status === 200) {
+        console.log("res after 200: ", res);
+        setFavoriteC(res.data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    getFavoriteScripts();
+  }, []);
   return (
     <div>
       <Header />
@@ -256,7 +280,92 @@ const UserProfile = () => {
           )}
         </div>
         <div className={styles.yourScripts}>
-          <h4>Your Scripts</h4>
+          <h4>Favourite</h4>
+          <div className={styles.scriptsItems}>
+            <div className="row">
+              {favoriteC?.map((val, id) => {
+                return (
+                  <div
+                    className="col-lg-3 ps-1 pe-1"
+                    key={id}
+                    onClick={() => specificScriptNavigator(val.id)}
+                  >
+                    <div
+                      className={styles.items}
+                      style={{
+                        backgroundImage:
+                          "url(" +
+                          process.env.REACT_APP_Base_URL +
+                          val.thumbnail +
+                          ")",
+                      }}
+                    >
+                      <div className={styles.itemsHeader}>
+                        <div className={styles.itemsHeaderTop}>
+                          <div className={styles.views}>
+                            <svg
+                              data-v-acc28e10=""
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              className="h-4 w-4"
+                            >
+                              <path
+                                data-v-acc28e10=""
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              ></path>{" "}
+                              <path
+                                data-v-acc28e10=""
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              ></path>
+                            </svg>
+                            {val.views}
+                          </div>
+                          <div className={styles.uploadTime}>
+                            {moment(val.created_at).fromNow()}
+                          </div>
+                        </div>
+                        <div className={styles.itemsHeaderBottom}>
+                          <div className={styles.free}>
+                            <svg
+                              data-v-acc28e10=""
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="h-5 w-5"
+                            >
+                              <path
+                                data-v-acc28e10=""
+                                fillRule="evenodd"
+                                d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                                clipRule="evenodd"
+                              ></path>
+                            </svg>
+                            {val.type}
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.itemsBottom}>
+                        {/* <span>[UPDATE] 🔪Knife Strife!</span> */}
+                        <div>
+                          <div>
+                            <h4>{val.title}</h4>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
