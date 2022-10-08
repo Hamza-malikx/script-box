@@ -64,7 +64,7 @@ class Content(models.Model):
     views = models.IntegerField(blank=True, default=0)
     num_reviews = models.IntegerField(null=True, blank=True, default=0)
     rating = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='get_content')
 
     def __str__(self):
         return str(self.title)
@@ -74,7 +74,7 @@ class Content(models.Model):
 
 
 class Script(models.Model):
-    id = models.CharField(max_length=200, primary_key=True, default=datetime.now().strftime("%Y%m%d%H%M%S"))
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     script = models.CharField(max_length=500, null=False)
     is_encrypted = models.BooleanField(default=False)

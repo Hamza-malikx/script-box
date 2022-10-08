@@ -33,7 +33,6 @@ const Header = () => {
       // username = "null";
     }
   }, [username]);
-  console.log(username);
   return (
     <>
       <div className={styles.header}>

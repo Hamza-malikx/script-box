@@ -32,16 +32,14 @@ from User.serializers import *
 # User Authentication
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
+            data = super().validate(attrs)
+            serializer = UserSerializerWithToken(self.user).data
+            for k, v in serializer.items():
+                data[k] = v
 
-        serializer = UserSerializerWithToken(self.user).data
+            return data
 
-        for k, v in serializer.items():
-            data[k] = v
-
-        return data
-
-
+    
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
@@ -80,20 +78,27 @@ def registerUser(request):
 
 # -----------------------------------------------------------
 
+@api_view(['GET'])
+def getUser(request, pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
 @api_view(['PUT'])
 # @permission_classes([IsAuthenticated])
 def updateUser(request, pk):
     user = User.objects.get(id=pk)
     data = request.data
-        
+
     user.username = data['username']
-    user.email = data['email']
+    # user.email = data['email']
     user.bio = data['bio']
     user.password = make_password(data['password'])
-    
     user.save()
     serializer = UserSerializer(user, many=False)
     return Response(serializer.data)
+
 
 @api_view(['DELETE'])
 # @permission_classes([IsAdminUser])
@@ -119,6 +124,7 @@ def getUserProfile(request):
 def upload_content(request):
     try:
         data = request.data
+        # print("dataaaa",data)
         user = User.objects.get(username=data['user'])
 
         content = Content.objects.create(
@@ -135,12 +141,13 @@ def upload_content(request):
             thumbnail=data['image']
         )
 
-        print(data['script'])
-
-        sc = Script.objects.create(
-            script=data['script'],
-            content=content,
-        )
+        scripts = data['script']
+        print(scripts)
+        for scri in scripts:
+            sc = Script.objects.create(
+                script=scri['value'],
+                content=content,
+            )
         script_count = len(Script.objects.filter(content=content))
 
         apply_badge = ApplyBadgeCriteria.objects.filter(num_script=script_count).first()
@@ -174,6 +181,29 @@ def upload_content_image(request):
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    
+
+# @api_view(['POST'])
+# def upload_multiple_scripts(request):
+#     try:
+#         print("gusssssssss")
+#         # contentID = request.data['id']
+#         # content = Content.objects.get(id=contentID)
+#         multipleScripts = request.data('scripts')
+#         print("multipleScripts: ", multipleScripts)
+#
+#         # for i in multipleScripts:
+#         #     sc = Script.objects.create(
+#         #         script=data['script'],
+#         #         content=content,
+#         #     )
+#         # content.save()
+#
+#         return Response("Uploaded Image")
+#
+#     except Exception as ex:
+#         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+#         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -440,7 +470,7 @@ def like_comment(request):
         comment = Comment.objects.get(id=data['id'])
         if not LikeCommentCheck.objects.filter(comment=comment,user=user).exists():
             like = comment.likes
-            comment = Comment.objects.filter(id=data['id']).update(likes=like+1)
+            co = Comment.objects.filter(id=data['id']).update(likes=like+1)
             LikeCommentCheck.objects.create(comment=comment,user=user)
             serializer = CommentSerializer(comment, many=False)
             return Response(serializer.data)
@@ -459,12 +489,12 @@ def disLike_comment(request):
         comment = Comment.objects.get(id=data['id'])
         if LikeCommentCheck.objects.filter(comment=comment,user=user).exists():
             like = comment.likes
-            comment = Comment.objects.filter(id=data['id']).update(likes=like-1)
+            co = Comment.objects.filter(id=data['id']).update(likes=like-1)
             LikeCommentCheck.objects.filter(comment=comment,user=user).delete()
             serializer = CommentSerializer(comment, many=False)
             return Response(serializer.data)
         else:
-            return Response("Disliked")
+            return Response("Disliked Already")
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
@@ -476,7 +506,7 @@ def add_fav_content(request):
         data = request.data
         co = Content.objects.get(title=data['content'])
         user = User.objects.get(username=data['user'])
-        if not FavContent.objects.filter(content=co).exists():
+        if not FavContent.objects.filter(content=co,user=user).exists():
             fav = FavContent.objects.create(
                 user= user,
                 content= co
@@ -493,12 +523,14 @@ def add_fav_content(request):
 
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def check_fav_content(request, pk):
     try:
         data = request.data
         co = Content.objects.get(title=pk)
-        return Response(FavContent.objects.filter(content=co).exists())
+        user = User.objects.get(username=data['user'])
+
+        return Response(FavContent.objects.filter(content=co,user=user).exists())
 
     except Exception as ex:
         message = {'detail': f'....{type(ex).__name__, ex.args}.'}
@@ -510,12 +542,11 @@ def get_fav_content(request,pk):
     try:
         data = request.data
         user = User.objects.get(username=pk)
-
         fav = FavContent.objects.filter(
             user= user
         )
-
         serializer = FavSerializer(fav, many=True)
+
         return Response(serializer.data)
 
     except Exception as ex:

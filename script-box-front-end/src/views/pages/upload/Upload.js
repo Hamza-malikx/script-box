@@ -3,10 +3,14 @@ import styles from "./upload.module.css";
 import Header from "../home/navbar/Header";
 import Switch from "react-switch";
 import axios from "axios";
+import {useHistory} from "react-router-dom";
 const Upload = () => {
   const [thumbnail, setThumbnail] = useState([]);
+    const [userDetails, setUserDetails] = useState(
+        JSON.parse(localStorage.getItem("userData"))
+    );
   const [content, setContent] = useState({
-    user: "hamza",
+    user: userDetails.username,
     title: "",
     link: "",
     is_varfied: false,
@@ -16,12 +20,13 @@ const Upload = () => {
     tag: "",
     type: "free",
     privacy: "",
-    script: "",
+    script: [],
     // image: "",
   });
   const [switchState, setSwitchState] = useState(false);
   const [switchVerState, setSwitchVerState] = useState(false);
   const [type, setTypeState] = useState(false);
+  const history = useHistory();
 
   const handleUniScriptChange = (nextChecked) => {
     setSwitchState(nextChecked);
@@ -41,38 +46,6 @@ const Upload = () => {
   };
   const handleChangeInputFile = (e) => {
     setThumbnail(e.target.files[0]);
-  };
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-
-    formData.append("image", thumbnail);
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      const api = `${process.env.REACT_APP_Base_URL}/api/user/uploadContent/`;
-
-      var res = await axios.post(api, { ...content, image: formData }, config);
-      console.log(content);
-      console.log(formData);
-      if (res.status === 200) {
-        console.log(res);
-        formData.append("id", res?.data?.id);
-        const { data } = await axios.post(
-          `${process.env.REACT_APP_Base_URL}/api/user/uploadContentImage/`,
-          formData,
-          config
-        );
-
-        console.log(data);
-      }
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   // Add multiple input
@@ -107,8 +80,43 @@ const Upload = () => {
 
       return newArr;
     });
+      setContent({ ...content, script: arr });
   };
-  console.log(arr);
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", thumbnail);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/uploadContent/`;
+
+      var res = await axios.post(api, { ...content, image: formData }, config);
+      console.log(res);
+
+      if (res.status === 200) {
+        console.log(res);
+        formData.append("id", res?.data?.id);
+        const { data } = await axios.post(
+          `${process.env.REACT_APP_Base_URL}/api/user/uploadContentImage/`,
+          formData,
+          config
+        );
+
+        console.log(data);
+          history.push("/home");
+
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  console.log(content);
   return (
     <div>
       <Header />
@@ -243,7 +251,7 @@ const Upload = () => {
             ></textarea>
           </div>
           <div className={styles.addTagsWrapper}>
-            <label>Add tags</label>
+            <label>Add tags (separate tags with commas)</label>
             <br />
             <input
               className="form-control"
@@ -311,7 +319,7 @@ const Upload = () => {
           <div className={styles.pasteScriptWrapper}>
             <label>Paste Your script</label>
             <br />
-            {/* {arr.map((item, i) => {
+            {arr.map((item, i) => {
               return (
                 <textarea
                   key={i}
@@ -325,15 +333,15 @@ const Upload = () => {
                   placeholder="Write your script here..."
                 />
               );
-            })} */}
-            <textarea
+            })}
+            {/* <textarea
               className="form-control"
               type="text"
               placeholder="Write your script here..."
               name="script"
               value={content.script}
               onChange={handleChangeInput}
-            ></textarea>
+            ></textarea> */}
             <button className={styles.addScriptBtn} onClick={addInput}>
               Add
             </button>

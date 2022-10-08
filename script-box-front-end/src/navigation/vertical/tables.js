@@ -1,30 +1,17 @@
 // ** Icons Import
-import { Server, Grid, Circle } from 'react-feather'
+import { Server, Grid, Circle, User, File } from "react-feather";
 
 export default [
   {
-    id: 'tablesReactstrap',
-    title: 'Table',
-    icon: <Server size={20} />,
-    navLink: '/tables/reactstrap'
+    id: "dtBasic",
+    title: "Users List",
+    icon: <User size={12} />,
+    navLink: "/datatables/basic",
   },
   {
-    id: 'dataTable',
-    title: 'DataTable',
-    icon: <Grid size={20} />,
-    children: [
-      {
-        id: 'dtBasic',
-        title: 'Basic',
-        icon: <Circle size={12} />,
-        navLink: '/datatables/basic'
-      },
-      {
-        id: 'dtAdvance',
-        title: 'Advanced',
-        icon: <Circle size={12} />,
-        navLink: '/datatables/advance'
-      }
-    ]
-  }
-]
+    id: "tablesReactstrap",
+    title: "Contents List",
+    icon: <File size={20} />,
+    navLink: "/tables/reactstrap",
+  },
+];

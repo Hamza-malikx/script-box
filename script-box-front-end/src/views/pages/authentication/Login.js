@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 // ** Custom Hooks
@@ -75,6 +75,7 @@ const Login = () => {
   // ** Hooks
   const history = useHistory();
   const { skin } = useSkin();
+  const [err, setErr] = React.useState(null);
   // const dispatch = useDispatch()
   // const ability = useContext(AbilityContext)
   const {
@@ -86,50 +87,51 @@ const Login = () => {
   const illustration = skin === "dark" ? "login-v2-dark.svg" : "login-v2.svg",
     source = require(`@src/assets/images/pages/${illustration}`).default;
   const signInHandler = async (data) => {
-    const res = await axios.post(
-      "https://ab-scriptbox.herokuapp.com/api/user/login/",
-      data
-    );
-    console.log(res);
-    if (res.status === 200) {
-      toast.success(
-        <ToastContent
-          name={data.fullName || data.username}
-          role={data.role || "user"}
-        />,
-        {
-          icon: false,
-          transition: Slide,
-          hideProgressBar: true,
-          autoClose: 2000,
-        }
-      );
-      if (res.data.role === "ADMIN") {
-        localStorage.setItem(
-          "userData",
-          JSON.stringify({
-            ...res.data,
-            ability: [
-              {
-                action: "manage",
-                subject: "all",
-              },
-            ],
-          })
+    try {
+      const api = `${process.env.REACT_APP_Base_URL}/api/user/login/`;
+      var res = await axios.post(api, data);
+      if (res.status === 200) {
+        toast.success(
+          <ToastContent
+            name={data.fullName || data.username}
+            role={data.role || "user"}
+          />,
+          {
+            icon: false,
+            transition: Slide,
+            hideProgressBar: true,
+            autoClose: 2000,
+          }
         );
-        history.push("/dashboard/analytics");
-        window.location.reload(false);
+        if (res.data.role === "ADMIN") {
+          localStorage.setItem(
+            "userData",
+            JSON.stringify({
+              ...res.data,
+              ability: [
+                {
+                  action: "manage",
+                  subject: "all",
+                },
+              ],
+            })
+          );
+          history.push("/dashboard/analytics");
+          window.location.reload(false);
+        } else {
+          localStorage.setItem("userData", JSON.stringify(res.data));
+          history.push("/home");
+        }
       } else {
-        localStorage.setItem("userData", JSON.stringify(res.data));
-        history.push("/home");
+        alert("Recheck email or password");
       }
-
-      // var stored=res.data;
+    } catch (e) {
+      console.log(e);
+      alert("Recheck email or password");
     }
   };
   const onSubmit = (data) => {
     if (Object.values(data).every((field) => field.length > 0)) {
-      console.log(data);
       signInHandler(data);
     } else {
       for (const key in data) {
