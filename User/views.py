@@ -32,16 +32,14 @@ from User.serializers import *
 # User Authentication
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
+            data = super().validate(attrs)
+            serializer = UserSerializerWithToken(self.user).data
+            for k, v in serializer.items():
+                data[k] = v
 
-        serializer = UserSerializerWithToken(self.user).data
+            return data
 
-        for k, v in serializer.items():
-            data[k] = v
-
-        return data
-
-
+    
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
@@ -126,6 +124,7 @@ def getUserProfile(request):
 def upload_content(request):
     try:
         data = request.data
+        # print("dataaaa",data)
         user = User.objects.get(username=data['user'])
 
         content = Content.objects.create(
@@ -175,6 +174,29 @@ def upload_content_image(request):
         content = Content.objects.get(id=contentID)
         content.thumbnail = request.FILES.get('image')
         content.save()
+         
+        return Response("Uploaded Image")
+
+    except Exception as ex:
+        message = {'detail': f'....{type(ex).__name__, ex.args}.'}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+def upload_multiple_scripts(request):
+    try:
+        print("gusssssssss")
+        # contentID = request.data['id']
+        # content = Content.objects.get(id=contentID)
+        multipleScripts = request.data('scripts')
+        print("multipleScripts: ", multipleScripts)
+        
+        # for i in multipleScripts:
+        #     sc = Script.objects.create(
+        #         script=data['script'],
+        #         content=content,
+        #     )
+        # content.save()
          
         return Response("Uploaded Image")
 

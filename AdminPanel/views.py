@@ -61,7 +61,7 @@ def patch_user_script(request, pk):
 def delet_or_suspend_user(request, pk):
     user = User.objects.all(id=pk)
     data = request.data
-    if data == 'delete':
+    if data['delete'] == 'delete':
         user.delete()
     else:    
         user.is_active = data['isActive']

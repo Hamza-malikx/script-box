@@ -83,7 +83,7 @@ const Register = () => {
 
   const registration = async (param) => {
     const res = await axios.post(
-      "https://ab-scriptbox.herokuapp.com/api/user/register/",
+      `${process.env.REACT_APP_Base_URL}/api/user/register/`,
       param
     );
     if (res.status === 200) {
