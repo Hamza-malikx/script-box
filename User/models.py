@@ -134,7 +134,7 @@ class BadgeContent (models.Model):
 
 
 class SuspendContent (models.Model):
-    content= models.ForeignKey(Content, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
 
     def _str_(self):
         return str(self.id)

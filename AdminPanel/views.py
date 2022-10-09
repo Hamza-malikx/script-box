@@ -15,7 +15,7 @@ from AdminPanel.models import ApplyBadgeCriteria
 from User.models import Script, Content, User, Badge, SuspendContent
 # Serializers
 from User.serializers import ContentSerializer, UserSerializer, UserSerializerWithToken, BadgeSerializer, \
-    ContentIDSerializer
+    ContentIDSerializer, SuspendSerializer
 from .serializers import ScriptSerializer, StatSerializer, BadgeConentSerializer
 
 
@@ -191,8 +191,7 @@ def get_suspend_content(request):
     try:
         data = request.data
         suspend = SuspendContent.objects.all()
-        serializer = ContentIDSerializer(suspend, many=True)
-        print(serializer.data)
+        serializer = SuspendSerializer(suspend, many=True)
         return Response(serializer.data)
 
     except Exception as ex:
@@ -203,11 +202,9 @@ def get_suspend_content(request):
 def un_suspend_content(request,pk):
     try:
         data = request.data
-        con = Content.objects.get(id=pk)
 
         if SuspendContent.objects.filter(id=pk).exists():
             SuspendContent.objects.filter(id=pk).delete()
-            co = Content.objects.filter(id=data['content']).update(is_suspend=False)
             return Response("UnSuspended")
         else:
             return Response("Already UnSuspended")

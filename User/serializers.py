@@ -77,6 +77,18 @@ class ContentSerializer(serializers.ModelSerializer):
         serializer = ScriptSerializer(sc, many=True)
         return serializer.data
 
+class SuspendSerializer(serializers.ModelSerializer):
+    content = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = SuspendContent
+        fields = '__all__'
+
+    def get_content(self, obj):
+        sc = Content.objects.get(title=obj.content.title)
+        serializer = ContentSerializer(sc, many=False)
+        return serializer.data
+
 # --------------------------------------------------
 
 class BadgeContentSerializer(serializers.ModelSerializer):
