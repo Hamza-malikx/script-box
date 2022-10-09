@@ -9,7 +9,7 @@ import { Row, Col } from "reactstrap";
 
 // ** Demo Components
 
-import UsersListTable from "./UsersListTable";
+import BadgeListTable from "../basic/BadgeListTable";
 
 // ** Styles
 import "@styles/react/libs/tables/react-dataTable-component.scss";
@@ -19,7 +19,7 @@ const Tables = () => {
     <Fragment>
       <Row>
           <Col sm="12">
-              <UsersListTable />
+              <BadgeListTable/>
           </Col>
       </Row>
     </Fragment>

@@ -54,6 +54,7 @@ class Content(models.Model):
     link = models.CharField(max_length=600)
     thumbnail = models.ImageField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+    is_suspend = models.BooleanField(default=False)
     is_universal = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(null=True, blank=True)
@@ -132,8 +133,7 @@ class BadgeContent (models.Model):
         ordering = ['id']
 
 
-class DraftContent (models.Model):
-    user= models.ForeignKey(User, on_delete=models.CASCADE)
+class SuspendContent (models.Model):
     content= models.ForeignKey(Content, on_delete=models.CASCADE)
 
     def _str_(self):

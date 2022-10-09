@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.fields import ReadOnlyField
+
+from AdminPanel.models import ApplyBadgeCriteria
 from User.models import *
 # --------------------------------------------------
 
@@ -35,6 +37,19 @@ class BadgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Badge
         fields = '__all__'
+
+class BadgeConentSerializer(serializers.ModelSerializer):
+    badge = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = ApplyBadgeCriteria
+        fields = '__all__'
+
+    def get_badge(self, obj):
+        bg = Badge.objects.get(id=obj.badge.id)
+        print(bg)
+        serializer = BadgeSerializer(bg, many=False)
+        return serializer.data
 
 # --------------------------------------------------
 class StatSerializer(serializers.ModelSerializer):

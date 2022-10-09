@@ -14,4 +14,21 @@ export default [
     icon: <File size={20} />,
     navLink: "/tables/reactstrap",
   },
+  {
+    id: "dtBasic",
+    title: "Badge List",
+    icon: <File size={20} />,
+    navLink: "/datatables/badgeTable",
+  }, {
+    id: "dtBasic",
+    title: "Badge Upload",
+    icon: <File size={20} />,
+    navLink: "/datatables/badgeUpload",
+  },{
+    id: "dtBasic",
+    title: "Badge Content Criteria",
+    icon: <File size={20} />,
+    navLink: "/datatables/badgeContentCriteria",
+  },
+
 ];
